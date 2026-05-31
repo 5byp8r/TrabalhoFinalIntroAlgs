@@ -1,133 +1,52 @@
 # Proposta Inicial do Jogo
 
-Este documento deve ser preenchido pelo grupo na Semana 1 do projeto.
-
-A proposta deve apresentar uma ideia simples, clara e viável para ser desenvolvida com Python e Pygame dentro do prazo disponível.
+Um detetive procura por pistas para resolver achar um assassino
 
 ## 1. Nome provisório do jogo
-
-Escreva aqui o nome provisório do jogo.
-
-Exemplo:
-
-> Corrida dos Obstáculos
 
 ## 2. Integrantes do grupo
 
 Liste os integrantes do grupo.
 
-- Nome 1:
-- Nome 2:
-- Nome 3:
-- Nome 4:
+- Nome 1: João Pedro
+- Nome 2: Vinicius Marx
+- Nome 3: Davi Sollar
+- Nome 4: Pedro Oliveira
 
 ## 3. Tipo de jogo
 
-Indique o tipo de jogo que será desenvolvido.
-
-Exemplos:
-
-- jogo de desviar de obstáculos;
-- jogo de coleta de itens;
-- labirinto simples;
-- jogo de perguntas e respostas;
-- jogo de memória;
-- Pong;
-- Snake;
-- Breakout;
-- nave desviando de meteoros;
-- corrida simples com obstáculos;
-- jogo de clique rápido;
-- jogo de sobrevivência simples.
-
-Tipo escolhido pelo grupo:
-
-> Escreva aqui.
+> jogo de desvendar mistérios;
 
 ## 4. Descrição geral do jogo
 
-Explique, em poucas linhas, como o jogo funcionará.
-
-Procure responder:
-
-- O que aparece na tela?
-- O que o jogador controla?
-- O que o jogador precisa fazer?
-- Quais desafios aparecem durante a partida?
-
 Descrição:
 
-> Escreva aqui.
+> O jogador inicia o jogo e começa uma reprise explicando toda a primicia do jogo, o jogador anda pelo mapa e procura por pistas para achar o assassino, ele controla o deteive e precisa conseguir resolver os enigmas e pegar o assasino. Durante a progressão do jogo, caso o desafio não seja resolvido em um tempo específico um npc morre, se caso morrer npcs a mais que o estabelecibo o jogador perde. ao mesmo tempo deve gravar as senhas para pegar o assassino principal da história. Os desafios serão resolver criptografias, em um tempo específico, com base em desafios anteriores.
 
 ## 5. Objetivo do jogador
 
-Explique qual é o objetivo principal do jogador.
-
-Exemplos:
-
-- coletar o maior número possível de itens;
-- sobreviver pelo maior tempo possível;
-- chegar até o final do labirinto;
-- acertar alvos;
-- responder perguntas corretamente;
-- evitar obstáculos;
-- quebrar todos os blocos.
-
-Objetivo:
-
-> Escreva aqui.
+> capturar o assassino;
 
 ## 6. Regras principais
 
-Liste as principais regras do jogo.
-
-Exemplo:
-
-- O jogador começa com 3 vidas.
-- Cada moeda coletada vale 10 pontos.
-- Cada colisão com obstáculo remove 1 vida.
-- A partida termina quando as vidas chegam a zero.
-- O jogador vence se alcançar 100 pontos.
-
-Regras do grupo:
-
-- Regra 1:
-- Regra 2:
-- Regra 3:
-- Regra 4:
-- Regra 5:
+- Regra 1: - O jogador começa com 0 npcs mortos.
+- Regra 2: - Cada desafio resolvido garante uma parte da resposta.
+- Regra 3: - O jogo termina quando o jogador tem 5 npcs mortos.
+- Regra 4: - O jogador vence se capturar o assassino.
+- Regra 5: - Cada desafio não resolvido aumenta entre 1 e 3 o número de npcs mortos.
+- Regra 6: - O jogador deve interagir com os npcs para receber os desafios.
 
 ## 7. Condição de vitória
 
-Explique como o jogador vence ou conclui o jogo.
-
-Exemplos:
-
-- atingir determinada pontuação;
-- chegar ao final da fase;
-- sobreviver até o tempo acabar;
-- responder uma quantidade mínima de perguntas;
-- quebrar todos os blocos.
-
 Condição de vitória:
 
-> Escreva aqui.
+> Garantir que o assassino seja capturado.
 
 ## 8. Condição de derrota ou encerramento
 
-Explique como o jogador perde ou quando a partida termina.
-
-Exemplos:
-
-- perder todas as vidas;
-- acabar o tempo;
-- colidir com determinado obstáculo;
-- errar muitas perguntas;
-- deixar a bola cair, no caso de Breakout ou Pong.
-
 Condição de derrota ou encerramento:
 
-> Escreva aqui.
+> Deixar os npcs morrerem ou não capturar o assassino.
 
 ## 9. Elementos previstos no jogo
 
@@ -135,49 +54,39 @@ Descreva os principais elementos que farão parte do jogo.
 
 ## Jogador ou elemento principal
 
-Exemplo:
-
-> Um personagem controlado pelas setas do teclado.
-
 Descrição:
 
-> Escreva aqui.
+>  Um personagem controlado pelas setas do teclado.
+>  Concluir os desafios de maneira correta.
 
 ## Obstáculos, inimigos ou desafios
 
-Exemplo:
-
-> Obstáculos aparecem em posições aleatórias e devem ser evitados.
-
 Descrição:
 
-> Escreva aqui.
+> Npcs aparecem em posições fixas e devem ser consultados.
+> Npcs dão um desafio que, concluido leva a parte da "resposta final".
+> Desafios não concluidos resultam na morte de npcs.
 
 ## Itens, alvos ou objetos de interação
 
-Exemplo:
-
-> Moedas aparecem na tela e aumentam a pontuação quando coletadas.
-
 Descrição:
 
-> Escreva aqui.
+> Iteração com Npcs.
+> Agrupar partes da resposta;
 
 ## Pontuação, vidas, tempo ou progresso
 
-Exemplo:
-
-> O jogador começa com 3 vidas e ganha 10 pontos por item coletado.
-
 Descrição:
 
-> Escreva aqui.
+> O jogador começa com 0 npcs que vão morrendo ao longo do tempo, ou caso um desafio não seja concluido;
+> Desafios não são concluidos quando o tempo acabao, ou sua resposta é errada.
+> Progresso medido por quantas partes da resposta final foram encontrados.
 
 ## 10. Controles previstos
 
 Informe os comandos que serão utilizados pelo jogador.
 
-Exemplo:
+Controles do grupo:
 
 - Seta para cima: mover para cima
 - Seta para baixo: mover para baixo
@@ -185,12 +94,6 @@ Exemplo:
 - Seta para direita: mover para direita
 - Espaço: realizar ação
 - ESC: sair do jogo
-
-Controles do grupo:
-
-- Tecla/comando:
-- Tecla/comando:
-- Tecla/comando:
 
 ## 11. Organização inicial do código
 
@@ -265,22 +168,10 @@ Escopo mínimo:
 
 ## 15. Possíveis melhorias, caso haja tempo
 
-Liste funcionalidades extras que o grupo poderá implementar se conseguir concluir o escopo mínimo.
-
-Exemplos:
-
-- tela inicial;
-- sons;
-- fases;
-- aumento de dificuldade;
-- ranking;
-- animações;
-- novos tipos de obstáculos;
-- diferentes personagens;
-- menu de pausa.
-
 Melhorias possíveis:
 
-- Melhoria 1:
-- Melhoria 2:
-- Melhoria 3:
+- Melhoria 1: - tela inicial;
+- Melhoria 2: - sons;
+- Melhoria 3: - animações;
+- Melhoria 4: - Desafios novos / fases novas;
+- Melhoria 5: - Final alternativo;
