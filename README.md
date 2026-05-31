@@ -1,15 +1,16 @@
 # Nome do Jogo
 
-Projeto final da disciplina de Introdução a Algoritmos/Programação, desenvolvido com Python e Pygame.
 
-Este repositório é um template para os grupos da disciplina. A proposta é começar com uma base funcional e evoluir o jogo ao longo do semestre.
+
+Projeto final da disciplina de Introdução a Algoritmos/Programação, desenvolvido com Python e Pygame.
+A proposta é começar com uma base funcional e evoluir o jogo ao longo do semestre.
 
 ## Integrantes do grupo
 
-- Nome do integrante 1
-- Nome do integrante 2
-- Nome do integrante 3
-- Nome do integrante 4
+- Davi Sollar
+- Pedro Henrique Silva Oliveira
+- Vinicius Marx
+- João Pedro
 
 ## Estrutura do projeto
 
@@ -22,41 +23,25 @@ Este repositório é um template para os grupos da disciplina. A proposta é com
 
 ## Descrição do jogo
 
-Descreva brevemente a ideia principal do jogo.
-
-Exemplo:
-
-> O jogo consiste em controlar um personagem que deve coletar moedas e evitar obstáculos. O jogador ganha pontos ao coletar itens e perde vidas ao colidir com obstáculos. A partida termina quando o tempo acaba ou quando o jogador perde todas as vidas.
+> o jogo se baseia em exploração de plataforma, onde o jogadro e exlpora o mapa e interage com os npcs e eventos que ocorrem durante o jogo, perdendo vida caso interaja com algo nocivo. o jogo termina caso o jogador tenha passado por todos os eventos ou morra mais de 3 vezes.
 
 ## Objetivo do jogador
 
-Explique o que o jogador precisa fazer para vencer ou avançar no jogo.
-
-Exemplo:
-
-> O objetivo é coletar a maior quantidade possível de itens antes que o tempo acabe, evitando colisões com os obstáculos.
+O jogador devera interagir e escolher entre os eventos para que consiga cumprir os desafios estabelecidos, evitando perder nos mesmos
 
 ## Regras do jogo
 
-Liste as principais regras do jogo.
-
-Exemplo:
-
 - O jogador se movimenta usando as setas do teclado.
-- Cada item coletado aumenta a pontuação.
-- Colidir com um obstáculo reduz a quantidade de vidas.
-- A partida termina quando o jogador perde todas as vidas ou quando o tempo acaba.
+- Cada item coletado aumenta a sua progressão.
+- Colidir com um obstáculo reduz a quantidade de chances.
+- A partida termina quando o jogador perde todas as chances ou quando o mesmo ganha os desafios.
 
 ## Controles
 
-Informe as teclas ou comandos utilizados no jogo.
-
-Exemplo:
-
-- Seta para cima: mover para cima
-- Seta para baixo: mover para baixo
-- Seta para esquerda: mover para esquerda
-- Seta para direita: mover para direita
+- W: mover para cima
+- S: mover para baixo
+- A: mover para esquerda
+- D: mover para direita
 - Espaço: realizar ação
 - ESC: sair do jogo
 
@@ -79,7 +64,6 @@ python -m pytest
 
 ## Checklist mínimo para entrega
 
-- Preencher este README com nome final, descrição real, regras e controles do jogo.
 - Atualizar `docs/proposta.MD` com a proposta do grupo.
 - Garantir que o jogo executa com `python main.py`.
 - Garantir que os testes passam com `pytest`.
