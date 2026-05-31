@@ -11,7 +11,7 @@ Liste os integrantes do grupo.
 - Nome 1: João Pedro
 - Nome 2: Vinicius Marx
 - Nome 3: Davi Sollar
-- Nome 4: Pedro Oliveira
+- Nome 4: Pedro Henrique Silva Oliveira
 
 ## 3. Tipo de jogo
 
@@ -99,37 +99,23 @@ Controles do grupo:
 
 Explique como o grupo pretende organizar o código.
 
-Exemplo:
-
-- `main.py`: inicia o jogo;
-- `src/jogo.py`: contém o loop principal;
-- `src/config.py`: guarda configurações como tamanho da tela e cores;
-- `src/funcoes.py`: contém funções auxiliares;
-- `src/dados.py`: contém funções de leitura e escrita de arquivos.
-
-Organização planejada:
-
-> Escreva aqui.
-
+> `main.py`: inicia o jogo;
+> `src/jogo.py`: contém o loop principal;
+> `src/config.py`: guarda configurações como tamanho da tela e cores;
+> `src/funcoes.py`: contém funções auxiliares;
+> `src/dados.py`: contém funções de leitura e escrita de arquivos.
 
 ## 12. Recursos externos previstos
 
 Informe se o grupo pretende utilizar imagens, sons, fontes, tutoriais ou códigos externos.
 
-Exemplo:
-
-- imagens obtidas de banco gratuito;
-- sons gratuitos;
-- tutorial usado apenas como referência;
-- fonte personalizada.
-
 Recursos previstos:
 
-> Escreva aqui.
-
-Caso não pretenda utilizar recursos externos, escreva:
-
-> Não pretendemos utilizar recursos externos.
+> - imagens obtidas de banco gratuito;
+> - sons gratuitos;
+> - tutorial usado apenas como referência;
+> - fonte personalizada.
+> - anomações gratuitas e como referência;
 
 ## 13. Principais dificuldades esperadas
 
@@ -137,34 +123,19 @@ Liste as dificuldades que o grupo acredita que poderá enfrentar.
 
 Exemplos:
 
-- movimentação do jogador;
-- colisão entre objetos;
-- controle de tempo;
-- criação do ranking;
-- organização do código;
-- uso do GitHub;
-- testes;
-- exibição de textos na tela.
-
-Dificuldades previstas:
-
-- Dificuldade 1:
-- Dificuldade 2:
-- Dificuldade 3:
+- Dificuldade 1: movimentação do jogador;
+- Dificuldade 2: ibteração com npcs;
+- Dificuldade 3: controle de tempo;
+- Dificuldade 4: organização do código;
+- Dificuldade 5: uso do GitHub;
+- Dificuldade 6: testes;
+- Dificuldade 7: exibição de textos na tela.
 
 ## 14. Escopo mínimo para a entrega final
 
-Descreva qual será a versão mínima aceitável do jogo.
-
-Esta seção é importante para evitar que o grupo escolha uma ideia grande demais.
-
-Exemplo:
-
-> A versão mínima do jogo terá um personagem controlado pelo teclado, obstáculos aparecendo na tela, sistema de vidas, sistema de pontuação e tela de fim de jogo.
-
 Escopo mínimo:
 
-> Escreva aqui.
+> A versão mínima do jogo terá um personagem controlado pelo teclado, um npc interagível, um desafio, sistema de npcs mortos e parte da senha como recompensa.
 
 ## 15. Possíveis melhorias, caso haja tempo
 
