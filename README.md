@@ -7,10 +7,10 @@ A proposta é começar com uma base funcional e evoluir o jogo ao longo do semes
 
 ## Integrantes do grupo
 
-- Davi Sollar
+- Davi Emanuel Moreira Sollar
 - Pedro Henrique Silva Oliveira
-- Vinicius Marx
-- João Pedro
+- Vinícius Marx Galvão
+- João Pedro Silva Dantas
 
 ## Estrutura do projeto
 
