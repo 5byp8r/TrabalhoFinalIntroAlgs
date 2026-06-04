@@ -1,5 +1,35 @@
 import pygame
-            
+from src.camera import camera
+          
+sprites = []
+carregado = {} #SPRITES QUE JA FORAM CARREGADOS 
+
+# CRIA UMA CLASSE MODELO PARA PEGAR OS SPRITES
+class Sprite:
+    def __init__(self, image, x , y, hitbox):
+        if image in carregado: #SE O SPRITE ESTIVER CARREGAO ELE APENAS PEGA DO DICIONÁRIO
+            self.image = carregado[image]
+        else:
+            self.image = image
+            carregado[image] = self.image
+        self.x = x
+        self.y = y
+        sprites.append(self)
+        self.hitbox = hitbox
+    
+    def delete(self):
+        sprites.remove(self)
+
+    def criar_sprites(self, image, x , y, hitbox):
+    # CRIA O HITBOX BASEANDO NA IMAGEM DO SPRITE 
+    # 2. Criando a estrutura de Hitboxes usando Dicionários
+        hitbox = {
+            "rect": image.get_rect(topleft=(self.x - camera.x ,self.y - camera.y))
+        }
+        return hitbox
+        
+
+
 def pegar_sprite(local_arquivo, x, y, width, height, scale=1):
     """Corta um único elemento de uma spritesheet BMP e remove o fundo."""
     
@@ -27,3 +57,4 @@ def pegar_sprite(local_arquivo, x, y, width, height, scale=1):
         image = pygame.transform.scale(image, (novo_largura, novo_altura))
         
     return image
+    

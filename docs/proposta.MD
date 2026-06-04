@@ -2,7 +2,7 @@
 
 Um detetive procura por pistas para resolver achar um assassino
 
-## 1. Nome provisório do jogo
+## 1. Drakut: Fragmentos da verdade
 
 ## 2. Integrantes do grupo
 
