@@ -44,7 +44,10 @@ from src.dados import (
 
 from src.jogador import Player
 
-from src.camera import criar_tela
+from src.camera import (
+    camera,
+    criar_tela
+)    
 
 tipos_tile = [
     TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_040.png", False),
@@ -69,12 +72,16 @@ def executar_jogo():
     inimigo = Sprite(bat_image, 300, 400, bat_hitbox)
 
     gem_image    = pegar_sprite(CAMINHO_SPRITES, x=900, y=690, width=200, height=200, scale=0.5)
-    gem_hitbox = {"rect": gem_image.get_rect(topleft=(500, 200))}
+    gem_hitbox = {"rect": gem_image.get_rect(topleft=(500 , 200))}
     gema = Sprite(gem_image, 500, 200, gem_hitbox)
 
     jogador_image =    pegar_sprite(CAMINHO_SPRITES, x=110, y=120, width=190, height=190, scale=0.5)
-    jogador_hitbox = {"rect": jogador_image.get_rect(topleft=(110, 120))}
-    jogador = Player(jogador_image, 110, 120, jogador_hitbox)
+    jogador_hitbox = {"rect": jogador_image.get_rect(topleft=(LARGURA_TELA // 2, ALTURA_TELA // 2))}
+    jogador = Player(jogador_image, (LARGURA_TELA - jogador_image.get_width()) // 2, (ALTURA_TELA - jogador_image.get_height()) // 2, jogador_hitbox)
+
+    pontos = 0
+    vidas = 3
+    recorde = carregar_recorde(CAMINHO_RECORDE)
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -88,18 +95,60 @@ def executar_jogo():
             elif evento.type == pygame.KEYUP:
                 teclas.teclas_pressionadas.remove(evento.key)
 
+
+        # Desenhando o mapa na tela quando a camera é 0
+        tela.fill(PRETO)
+        mapa.desenhar_mapa(tela)
         jogador.update()
 
-        # Desenhando os elementos na tela passando a imagem e o rect de cada dicionário
-        tela.fill(PRETO)
+        
+        # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
+        jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
+        jogador.hitbox["rect"].y = limitar_valor(jogador.hitbox["rect"].y, 0, ALTURA_TELA - jogador.hitbox["rect"].height)
 
-        mapa.desenhar_mapa(tela)
+        # Verificação de colisão com a Gema (antigo 'item')
+        if verificar_colisao(jogador.hitbox["rect"], gema.hitbox["rect"]):
+            pontos = calcular_pontos(pontos, 10)
+
+            # Move a gema de lugar ao coletar
+            gema.hitbox["rect"].x += 80
+            gema.hitbox["rect"].y += 50
+
+            # Se a gema sair da tela, volta para uma posição segura
+            if gema.hitbox["rect"].x > LARGURA_TELA - gema.hitbox["rect"].width:
+                gema.hitbox["rect"].x = 50
+            if gema.hitbox["rect"].y > ALTURA_TELA - gema.hitbox["rect"].height:
+                gema.hitbox["rect"].y = 50
+
+        # Verificação de colisão com o Inimigo
+        if verificar_colisao(jogador.hitbox["rect"], inimigo.hitbox["rect"]):
+            vidas = tomar_dano(vidas, 1)
+
+            # Afasta o inimigo ao colidir
+            inimigo.hitbox["rect"].x += 80
+            inimigo.hitbox["rect"].y += 50
+
+            if inimigo.hitbox["rect"].x > LARGURA_TELA - inimigo.hitbox["rect"].width:
+                inimigo.hitbox["rect"].x = 50
+            if inimigo.hitbox["rect"].y > ALTURA_TELA - inimigo.hitbox["rect"].height:
+                inimigo.hitbox["rect"].y = 50
+
+        # Regras de fim de jogo e recorde
+        if jogador_perdeu(vidas):
+            rodando = False
+
+        if pontos > recorde:
+            recorde = pontos
+            salvar_recorde(CAMINHO_RECORDE, recorde)
+
+        pygame.display.set_caption(
+            f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
+        )
+
         for s in sprites:
 
             tela.blit(s.image, s.hitbox["rect"])
 
         pygame.display.flip()
-
-        pygame.time.delay(1)
-
+        
     pygame.quit()

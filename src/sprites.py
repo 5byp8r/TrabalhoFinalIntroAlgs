@@ -12,22 +12,13 @@ class Sprite:
         else:
             self.image = image
             carregado[image] = self.image
-        self.x = x
-        self.y = y
+        self.x = x 
+        self.y = y 
         sprites.append(self)
         self.hitbox = hitbox
     
     def delete(self):
         sprites.remove(self)
-
-    def criar_sprites(self, image, x , y, hitbox):
-    # CRIA O HITBOX BASEANDO NA IMAGEM DO SPRITE 
-    # 2. Criando a estrutura de Hitboxes usando Dicionários
-        hitbox = {
-            "rect": image.get_rect(topleft=(self.x - camera.x ,self.y - camera.y))
-        }
-        return hitbox
-        
 
 
 def pegar_sprite(local_arquivo, x, y, width, height, scale=1):
