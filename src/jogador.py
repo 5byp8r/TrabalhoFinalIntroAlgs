@@ -1,12 +1,27 @@
 import pygame
 from src.teclas import pressionado
-from src.sprites import Sprite
+from src.sprites import (
+    sprites,
+    carregado
+)
+from src.camera import camera
 
-class Player(Sprite):
-    def __init__(self, image, x, y, hitbox):
-        super().__init__(image, x, y, hitbox)
+class Player:
+    def __init__(self, image, x , y, hitbox):
+        if image in carregado: #SE O SPRITE ESTIVER CARREGAO ELE APENAS PEGA DO DICIONÁRIO
+            self.image = carregado[image]
+        else:
+            self.image = image
+            carregado[image] = self.image
+        self.x = x
+        self.y = y
+        sprites.append(self)
+        self.hitbox = hitbox
         self.velocidade = 5
-
+    
+    def delete(self):
+        sprites.remove(self)
+        
     def update(self):
         
         #COMANDOS WASD
@@ -21,3 +36,6 @@ class Player(Sprite):
 
         #ATUALIZAR O HITBOX
         self.hitbox["rect"].topleft = (self.x, self.y)
+        
+        camera.x = self.x - camera.width // 2 + self.image.get_width() // 2
+        camera.y = self.y - camera.height // 2 + self.image.get_height() // 2

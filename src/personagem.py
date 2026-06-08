@@ -1,5 +1,6 @@
 import pygame
 
+from src.camera import camera
 # recebe o caminho da imagem e a largura de cada frame
 # divide a imagem em pedaços iguais e guarda cada um numa lista
 def carregar_frames(caminho, largura_frame=128):
@@ -24,6 +25,7 @@ class Personagem:
         # posição inicial do personagem na tela
         self.x = x
         self.y = y
+        self.hitbox = {"rect": pygame.Rect(x, y, 128, 128)} 
 
         # velocidade normal e velocidade ao segurar shift
         self.velocidade = 1
@@ -73,6 +75,7 @@ class Personagem:
             "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
             "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
         }
+
 
 
     def atualizar(self):
@@ -141,8 +144,16 @@ class Personagem:
         if self.estado != self.estado_anterior:
             self.frame_atual = 0
             self.contador = 0
+        
+        self.hitbox["rect"].x = self.x
+        self.hitbox["rect"].y = self.y
+
+        # atualiza a câmera para seguir o personagem
+        camera.x = self.x - camera.width // 2 + 64
+        camera.y = self.y - camera.height // 2 + 64
 
         self.avancar_animacao()
+
     def avancar_animacao(self):
         # incrementa o contador a cada iteração do loop
         self.contador += 1
