@@ -1,9 +1,5 @@
 import pygame
 
-pygame.init()
-tela = pygame.display.set_mode((800, 600))
-clock = pygame.time.Clock()
-
 # recebe o caminho da imagem e a largura de cada frame
 # divide a imagem em pedaços iguais e guarda cada um numa lista
 def carregar_frames(caminho, largura_frame=128):
@@ -21,22 +17,6 @@ def carregar_frames(caminho, largura_frame=128):
         frames.append(frame)
 
     return frames  # retorna a lista com todos os frames recortados
-
-
-# carrega todas as animações do personagem
-# cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
-animacoes = {
-    "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
-    "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
-    "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
-    "run":     carregar_frames("assets/imagens/personagem_principal/Run.png"),
-    "jump":    carregar_frames("assets/imagens/personagem_principal/Jump.png"),
-    "attack1": carregar_frames("assets/imagens/personagem_principal/Attack_1.png"),
-    "attack2": carregar_frames("assets/imagens/personagem_principal/Attack_2.png"),
-    "attack3": carregar_frames("assets/imagens/personagem_principal/Attack_3.png"),
-    "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
-    "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
-}
 
 
 class Personagem:
@@ -78,6 +58,23 @@ class Personagem:
         # isso acontece durante ataques, hurt e dead
         self.bloqueado = False
 
+
+        # carrega todas as animações do personagem
+        # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
+        self.animacoes = {
+            "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
+            "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
+            "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
+            "run":     carregar_frames("assets/imagens/personagem_principal/Run.png"),
+            "jump":    carregar_frames("assets/imagens/personagem_principal/Jump.png"),
+            "attack1": carregar_frames("assets/imagens/personagem_principal/Attack_1.png"),
+            "attack2": carregar_frames("assets/imagens/personagem_principal/Attack_2.png"),
+            "attack3": carregar_frames("assets/imagens/personagem_principal/Attack_3.png"),
+            "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
+            "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
+        }
+
+
     def atualizar(self):
         # guarda o estado atual antes de qualquer coisa
         # assim dá pra saber se ele mudou no final
@@ -87,7 +84,7 @@ class Personagem:
         # só desbloqueia quando chegar no último frame da animação
         if self.bloqueado:
             self.avancar_animacao()
-            if self.frame_atual == len(animacoes[self.estado]) - 1:
+            if self.frame_atual == len(self.animacoes[self.estado]) - 1:
                 self.bloqueado = False
                 if self.estado != "dead":  # se morreu, fica no chão
                     self.estado = "idle"
@@ -154,11 +151,11 @@ class Personagem:
         if self.contador >= self.velocidade_animacao[self.estado]:
             self.contador = 0
             # o % faz o frame voltar pra 0 depois do último, criando o loop da animação
-            self.frame_atual = (self.frame_atual + 1) % len(animacoes[self.estado])
+            self.frame_atual = (self.frame_atual + 1) % len(self.animacoes[self.estado])
 
     def desenhar(self, tela):
         # pega o frame atual da animação do estado correto
-        frame = animacoes[self.estado][self.frame_atual]
+        frame = self.animacoes[self.estado][self.frame_atual]
 
         # se estiver olhando para a esquerda, espelha a imagem horizontalmente
         # o True no primeiro parâmetro espelha no eixo X, o False no Y não mexe
@@ -167,23 +164,3 @@ class Personagem:
 
         # desenha o frame na posição do personagem
         tela.blit(frame, (self.x, self.y))
-
-# cria o personagem no centro da tela
-personagem = Personagem(300, 300)
-
-rodando = True
-while rodando:
-    clock.tick(60)  # limita o jogo a 60 frames por segundo
-
-    # verifica se o jogador fechou a janela
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            rodando = False
-
-    personagem.atualizar()  # processa movimento e animação
-
-    tela.fill((50, 50, 50))       # limpa a tela com cinza escuro
-    personagem.desenhar(tela)     # desenha o personagem por cima
-    pygame.display.flip()         # atualiza a tela com tudo que foi desenhado
-
-pygame.quit()

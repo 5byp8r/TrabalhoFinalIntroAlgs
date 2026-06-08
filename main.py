@@ -52,3 +52,30 @@ if __name__ == "__main__":
 #     pontos = 0
 #     vidas = 3
 #     recorde = carregar_recorde(CAMINHO_RECORDE)
+##############################################################
+# import pygame
+# from src.personagem import Personagem  # importa a classe do personagem
+
+# pygame.init()
+# tela = pygame.display.set_mode((800, 600))
+# clock = pygame.time.Clock()
+
+# # cria o personagem no centro da tela
+# personagem = Personagem(300, 300)
+
+# rodando = True
+# while rodando:
+#     clock.tick(60)  # limita a 60 fps
+
+#     # verifica se o jogador fechou a janela
+#     for evento in pygame.event.get():
+#         if evento.type == pygame.QUIT:
+#             rodando = False
+
+#     personagem.atualizar()  # processa movimento e animação
+
+#     tela.fill((50, 50, 50))       # limpa a tela
+#     personagem.desenhar(tela)     # desenha o personagem
+#     pygame.display.flip()         # atualiza a tela
+
+# pygame.quit()
