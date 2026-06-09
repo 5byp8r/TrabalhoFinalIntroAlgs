@@ -88,7 +88,7 @@ def executar_jogo():
     gema = Sprite(gem_image, 500, 200, gem_hitbox)
 
     jogador = Personagem(LARGURA_TELA // 2, ALTURA_TELA // 2)
-    npc = NPC(LARGURA_TELA // 2 - 100, ALTURA_TELA // 2 - 100, "npc_pista1")
+    npc = NPC(LARGURA_TELA // 2, ALTURA_TELA // 2 - 100, "npc_pista1")
 
     pontos = 0
     vidas = 3
@@ -123,7 +123,7 @@ def executar_jogo():
 
         if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
             delay += relogio.get_time()
-            delay = npc.atualizar_dialogos(delay)
+            delay = npc.atualizar_dialogos(delay, dialogos)
         else: 
             delay = 9999
 

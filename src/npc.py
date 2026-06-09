@@ -25,13 +25,13 @@ def carregar_frames(caminho, largura_frame=128):
 
 class NPC:
     def __init__(self, x, y, name):
-        self.i = -2
+        self.i = -1
         self.name = name
 
         # posição inicial do personagem na tela
         self.x = x
         self.y = y
-        self.hitbox = {"rect": pygame.Rect(x, y, 128, 128).scale_by(2.5, 2.5)} 
+        self.hitbox = {"rect": pygame.Rect(x, y, 128, 128)} 
 
         # velocidade normal e velocidade ao segurar shift
         self.velocidade = 1
@@ -148,10 +148,10 @@ class NPC:
 
         self.avancar_animacao()
 
-    def atualizar_dialogos(self, delay):
+    def atualizar_dialogos(self, delay, dialogos: Texto):
         if pressionado(pygame.K_SPACE) and delay > 1000 and not self.i == -2:
             self.i+=1
-            if self.i >= len(self.dialogos[self.name]): self.i = -2
+            if self.i >= len(dialogos.textos[self.name]): self.i = -2
             return 0
         return delay
 
