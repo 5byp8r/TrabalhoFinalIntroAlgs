@@ -42,12 +42,16 @@ from src.dados import (
     carregar_recorde,
 )
 
-from src.jogador import Player
+from src.npc import NPC
 
 from src.camera import (
     camera,
     criar_tela
 )    
+
+from src.teclas import pressionado
+
+from src.texto import Texto
 
 from src.personagem import Personagem
 
@@ -67,6 +71,8 @@ def executar_jogo():
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
 
     relogio = pygame.time.Clock()
+    delay = 0
+    i = -1
     rodando = True
 
     bat_image    = pegar_sprite(CAMINHO_SPRITES, x=905, y=1060, width=200, height=130, scale=0.5)
@@ -78,10 +84,13 @@ def executar_jogo():
     gema = Sprite(gem_image, 500, 200, gem_hitbox)
 
     jogador = Personagem(LARGURA_TELA // 2, ALTURA_TELA // 2)
+    npc = NPC(LARGURA_TELA // 2 - 100, ALTURA_TELA // 2 - 100, "npc_pista1")
 
     pontos = 0
     vidas = 3
     recorde = carregar_recorde(CAMINHO_RECORDE)
+
+    dialogos = Texto("assets/textos/npc.json") 
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -95,14 +104,18 @@ def executar_jogo():
             elif evento.type == pygame.KEYUP:
                 teclas.teclas_pressionadas.remove(evento.key)
 
-
         # Desenhando o mapa na tela quando a camera é 0
         tela.fill(PRETO)
         mapa.desenhar_mapa(tela)
         jogador.atualizar()
-        jogador.desenhar(tela)
+        npc.atualizar()
 
-        
+        if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
+            delay += relogio.get_time()
+            delay = npc.atualizar_dialogos(delay)
+        else: 
+            delay = 9999
+
         # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
         jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
         jogador.hitbox["rect"].y = limitar_valor(jogador.hitbox["rect"].y, 0, ALTURA_TELA - jogador.hitbox["rect"].height)
@@ -146,6 +159,10 @@ def executar_jogo():
             f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
         )
 
+
+        jogador.desenhar(tela)
+        npc.desenhar(tela)
+        npc.desenhar_dialogos(tela, dialogos)
 
         pygame.display.flip()
         
