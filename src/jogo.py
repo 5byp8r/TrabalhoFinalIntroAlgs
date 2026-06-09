@@ -29,6 +29,10 @@ from src.funcoes import (
     limitar_valor,
     verificar_colisao,
     tomar_dano,
+    recompensa_pista,
+    recompensa_objetivo,
+    punicao_erro,
+    punicao_tempo
 )
 
 from src.sprites import (
@@ -91,6 +95,13 @@ def executar_jogo():
     recorde = carregar_recorde(CAMINHO_RECORDE)
 
     dialogos = Texto("assets/textos/npc.json") 
+
+    pontos = 0
+
+    pista_encontrada = False
+    objetivo_encontrado = False
+    acao_errada = False
+    tempo_esgotado = False
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -159,11 +170,23 @@ def executar_jogo():
             f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
         )
 
-
         jogador.desenhar(tela)
         npc.desenhar(tela)
         npc.desenhar_dialogos(tela, dialogos)
+        
+        #recompensa por pista coletada (gema) e objetivos
+        if  pista_encontrada:
+            pontos = recompensa_pista(pontos, 10)
 
+        if objetivo_encontrado:
+            pontos = recompensa_objetivo(pontos, 50)
+
+        #sistema de punição
+        if acao_errada:
+            pontos = punicao_erro(pontos, 20)
+
+        if tempo_esgotado:
+            pontos = punicao_tempo(pontos, 30)
         pygame.display.flip()
         
     pygame.quit()
