@@ -99,24 +99,24 @@ class Personagem:
         correndo = teclas[pygame.K_LSHIFT]  # verifica se shift está pressionado
 
         # move o personagem e atualiza a direção que ele está olhando
-        if teclas[pygame.K_LEFT]:
+        if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.x -= vel
             movendo = True
             self.olhando_direita = False  # virou para a esquerda
 
-        if teclas[pygame.K_RIGHT]:
+        if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.x += vel
             movendo = True
             self.olhando_direita = True  # virou para a direita
 
-        if teclas[pygame.K_UP]:
+        if teclas[pygame.K_UP] or teclas[pygame.K_w]:
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.y -= vel
             movendo = True
 
-        if teclas[pygame.K_DOWN]:
+        if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.y += vel
             movendo = True

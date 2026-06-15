@@ -41,3 +41,6 @@ def punicao_erro(pontos_atual, punicao_ponto):
 def punicao_tempo(pontos_atual, punicao_tempo):
     """Essa função pune o jogador por tempo esgotado."""
     return pontos_atual - punicao_tempo
+
+def abrir_desafio(desafio_aberto):
+    return True

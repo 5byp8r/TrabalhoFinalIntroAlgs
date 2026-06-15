@@ -32,7 +32,8 @@ from src.funcoes import (
     recompensa_pista,
     recompensa_objetivo,
     punicao_erro,
-    punicao_tempo
+    punicao_tempo,
+    abrir_desafio
 )
 
 from src.sprites import (
@@ -55,9 +56,11 @@ from src.camera import (
 
 from src.teclas import pressionado
 
-from src.texto import Texto
+from src.texto import Texto, texto_desafio
 
 from src.personagem import Personagem
+
+from src.desafios import Carta
 
 tipos_tile = [
     TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_040.png", False),
@@ -67,6 +70,7 @@ tipos_tile = [
 ]
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
+
 
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
@@ -94,6 +98,8 @@ def executar_jogo():
     vidas = 3
     recorde = carregar_recorde(CAMINHO_RECORDE)
 
+    carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
+
     dialogos = Texto("assets/textos/npc.json") 
 
     pontos = 0
@@ -102,6 +108,13 @@ def executar_jogo():
     objetivo_encontrado = False
     acao_errada = False
     tempo_esgotado = False
+
+    fonte = pygame.font.Font(None, 36)
+    texto = ""
+    ativo = False
+    caixa = pygame.Rect(250, 500, 300, 40)
+
+    desafio_aberto = False
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -124,56 +137,30 @@ def executar_jogo():
         if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
             delay += relogio.get_time()
             delay = npc.atualizar_dialogos(delay, dialogos)
+            if delay == 0:
+                desafio_aberto = True
         else: 
             delay = 9999
+                    
 
         # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
         jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
         jogador.hitbox["rect"].y = limitar_valor(jogador.hitbox["rect"].y, 0, ALTURA_TELA - jogador.hitbox["rect"].height)
 
-        # Verificação de colisão com a Gema (antigo 'item')
-        if verificar_colisao(jogador.hitbox["rect"], gema.hitbox["rect"]):
-            pontos = calcular_pontos(pontos, 10)
-
-            # Move a gema de lugar ao coletar
-            gema.hitbox["rect"].x += 80
-            gema.hitbox["rect"].y += 50
-
-            # Se a gema sair da tela, volta para uma posição segura
-            if gema.hitbox["rect"].x > LARGURA_TELA - gema.hitbox["rect"].width:
-                gema.hitbox["rect"].x = 50
-            if gema.hitbox["rect"].y > ALTURA_TELA - gema.hitbox["rect"].height:
-                gema.hitbox["rect"].y = 50
-
-        # Verificação de colisão com o Inimigo
-        if verificar_colisao(jogador.hitbox["rect"], inimigo.hitbox["rect"]):
-            vidas = tomar_dano(vidas, 1)
-
-            # Afasta o inimigo ao colidir
-            inimigo.hitbox["rect"].x += 80
-            inimigo.hitbox["rect"].y += 50
-
-            if inimigo.hitbox["rect"].x > LARGURA_TELA - inimigo.hitbox["rect"].width:
-                inimigo.hitbox["rect"].x = 50
-            if inimigo.hitbox["rect"].y > ALTURA_TELA - inimigo.hitbox["rect"].height:
-                inimigo.hitbox["rect"].y = 50
-
-        # Regras de fim de jogo e recorde
-        if jogador_perdeu(vidas):
-            rodando = False
-
-        if pontos > recorde:
-            recorde = pontos
-            salvar_recorde(CAMINHO_RECORDE, recorde)
-
-        pygame.display.set_caption(
-            f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
-        )
-
         jogador.desenhar(tela)
         npc.desenhar(tela)
         npc.desenhar_dialogos(tela, dialogos)
-        
+
+        #chamando desfaio
+        if desafio_aberto:
+            # Desenha a Carta
+            carta.desenhar(tela)
+
+            # Desenha a Caixa de resposta
+            pygame.draw.rect(tela, (255, 255, 255), caixa, 2)
+            texto_surface = fonte.render(texto, True, (255, 255, 255))
+            tela.blit(texto_surface, (caixa.x + 5, caixa.y + 5))
+                        
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:
             pontos = recompensa_pista(pontos, 10)
