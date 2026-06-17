@@ -60,7 +60,7 @@ class NPC(Movel):
 
     def atualizar_dialogos(self, delay, dialogos: Texto):
         #atualiza o índice do diálogo
-        if pressionado(pygame.K_SPACE) and delay > 1000 and not self.indice_dialogo == -2:
+        if pressionado(pygame.K_SPACE) and delay > 100 and not self.indice_dialogo == -2:
             self.indice_dialogo+=1
             if self.indice_dialogo >= len(dialogos._textos[self.nome + "_pista"]): self.indice_dialogo = -2 # se os diálogos chegaram ao final, atualiza com -2
             return 0

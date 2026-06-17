@@ -42,11 +42,6 @@ from src.sprites import (
     pegar_sprite,
 )
 
-from src.dados import (
-    salvar_recorde,
-    carregar_recorde,
-)
-
 from src.npc import NPC
 
 from src.camera import (
@@ -63,7 +58,7 @@ from src.personagem import Personagem
 from src.desafios import Carta
 
 tipos_tile = [
-    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_040.png", False),
+    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
     TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
     TipoTile("grass", "assets/imagens/Tiles/GK_JC_Free_047.png", False),
     TipoTile("path", "assets/imagens/Tiles/GK_JC_Free_041.png", False)
@@ -82,20 +77,10 @@ def executar_jogo():
     delay = 0
     rodando = True
 
-    bat_image    = pegar_sprite(CAMINHO_SPRITES, x=905, y=1060, width=200, height=130, scale=0.5)
-    bat_hitbox = {"rect": bat_image.get_rect(topleft=(300, 400))}
-    inimigo = Sprite(bat_image, 300, 400, bat_hitbox)
-
-    gem_image    = pegar_sprite(CAMINHO_SPRITES, x=900, y=690, width=200, height=200, scale=0.5)
-    gem_hitbox = {"rect": gem_image.get_rect(topleft=(500 , 200))}
-    gema = Sprite(gem_image, 500, 200, gem_hitbox)
-
     jogador = Personagem(LARGURA_TELA // 2, ALTURA_TELA // 2)
     npc = NPC(LARGURA_TELA // 2, ALTURA_TELA // 2 - 100, "john")
 
     pontos = 0
-    vidas = 3
-    recorde = carregar_recorde(CAMINHO_RECORDE)
 
     carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
 
@@ -139,7 +124,7 @@ def executar_jogo():
             if npc.indice_dialogo == -2:
                 desafio_aberto = True
         else: 
-            delay = 9999
+            delay = 999
 
         # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
         jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
@@ -151,13 +136,20 @@ def executar_jogo():
 
         #chamando desfaio
         if desafio_aberto:
-            # Desenha a Carta
+        # Desenha a Carta
             carta.desenhar(tela)
 
-            # Desenha a Caixa de resposta
-            pygame.draw.rect(tela, (255, 255, 255), caixa, 2)
-            texto_surface = fonte.render(texto, True, (255, 255, 255))
-            tela.blit(texto_surface, (caixa.x + 5, caixa.y + 5))
+            if desafio_aberto and evento.type == pygame.MOUSEBUTTONDOWN:
+                if evento.button == 1:
+                    delay += relogio.get_time()
+
+                    if delay >= 300:
+                        delay = 0
+                        carta.virar()
+
+            if evento.type == pygame.KEYDOWN:
+                if teclas.teclas_pressionadas == pygame.K_ESCAPE:
+                    desafio_aberto = False
 
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:
