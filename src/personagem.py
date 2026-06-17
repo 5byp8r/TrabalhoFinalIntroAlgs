@@ -1,6 +1,7 @@
 import pygame
 from src.movel import Movel, carregar_frames
 from src.camera import camera
+from src.teclas import pressionado
 
 class Personagem(Movel):
     def __init__(self, x, y):
@@ -57,30 +58,28 @@ class Personagem(Movel):
                     self.estado = "idle"
             return  # sai do método sem processar movimento
 
-        # captura todas as teclas que estão pressionadas agora
-        teclas = pygame.key.get_pressed()
         movendo = False
-        correndo = teclas[pygame.K_LSHIFT]  # verifica se shift está pressionado
+        correndo = pressionado(pygame.K_LSHIFT)  # verifica se shift está pressionado
 
         # move o personagem e atualiza a direção que ele está olhando
-        if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
+        if pressionado(pygame.K_LEFT) or pressionado(pygame.K_a):
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.x -= vel
             movendo = True
             self.olhando_direita = False  # virou para a esquerda
 
-        if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
+        if pressionado(pygame.K_RIGHT) or pressionado(pygame.K_d):
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.x += vel
             movendo = True
             self.olhando_direita = True  # virou para a direita
 
-        if teclas[pygame.K_UP] or teclas[pygame.K_w]:
+        if pressionado(pygame.K_UP) or pressionado(pygame.K_w):
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.y -= vel
             movendo = True
 
-        if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
+        if pressionado(pygame.K_DOWN) or pressionado(pygame.K_s):
             vel = self.velocidade_corrida if correndo else self.velocidade
             self.y += vel
             movendo = True
@@ -93,13 +92,13 @@ class Personagem(Movel):
 
         # ataques têm prioridade, substituem o estado de movimento
         # ao atacar, bloqueia pra animação terminar antes de fazer outra coisa
-        if teclas[pygame.K_z]:
+        if pressionado(pygame.K_z):
             self.estado = "attack1"
             self.bloqueado = True
-        elif teclas[pygame.K_x]:
+        elif pressionado(pygame.K_x):
             self.estado = "attack2"
             self.bloqueado = True
-        elif teclas[pygame.K_c]:
+        elif pressionado(pygame.K_c):
             self.estado = "attack3"
             self.bloqueado = True
 

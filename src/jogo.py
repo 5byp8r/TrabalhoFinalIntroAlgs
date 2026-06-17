@@ -66,7 +66,6 @@ tipos_tile = [
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
 
-
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
     pygame.init()
@@ -119,12 +118,9 @@ def executar_jogo():
         npc.atualizar()
 
         if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
-            delay += relogio.get_time()
-            delay = npc.atualizar_dialogos(delay, dialogos)
+            npc.atualizar_dialogos(dialogos)
             if npc.indice_dialogo == -2:
                 desafio_aberto = True
-        else: 
-            delay = 999
 
         # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
         jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
