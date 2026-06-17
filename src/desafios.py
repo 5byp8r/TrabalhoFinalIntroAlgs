@@ -4,7 +4,8 @@ from src.config import (
     ALTURA_TELA,
     LARGURA_TELA,
     BRANCO,
-    CINZA
+    CINZA,
+    PRETO
 )
 
 class Carta:
@@ -37,7 +38,7 @@ class Carta:
 class caixaResposta:
     def __init__(self, x, y, largura=300, altura=40):
 
-        self.texto = ""
+        self.texto = "decifre"
 
         self.x = x
         self.y = y
@@ -57,9 +58,15 @@ class caixaResposta:
                 self.texto += evento.unicode
 
     def desenhar(self, tela):
+        surface_fundo = pygame.Surface((self.caixa.width, self.caixa.height))
+        surface_fundo.set_alpha(180)        
+        surface_fundo.fill(BRANCO)
+        tela.blit(surface_fundo, (self.caixa.x, self.caixa.y))
+
         cor_borda = BRANCO if self.ativo else CINZA
-        pygame.draw.rect(tela, cor_borda, self.caixa, 2)
-        superficie = self.fonte.render(self.texto, True, BRANCO)
+        pygame.draw.rect(tela, cor_borda, self.caixa, 2)  # borda
+
+        superficie = self.fonte.render(self.texto, True, PRETO)
         tela.blit(superficie, (self.caixa.x + 8, self.caixa.y + 8))
 
     def validar(self, resposta_correta):

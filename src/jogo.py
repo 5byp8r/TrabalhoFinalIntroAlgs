@@ -82,7 +82,7 @@ def executar_jogo():
     pontos = 0
 
     carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
-    caixa_resposta = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 20 , 300, 40)
+    caixa_resposta = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 50 , 300, 40)
 
     dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
 
@@ -132,10 +132,13 @@ def executar_jogo():
             caixa_resposta.desenhar(tela)
 
             for evento in pygame.event.get():
-
                 if evento.type == pygame.QUIT:
-                    rodando = False  
-
+                    rodando = False
+                if evento.type == pygame.KEYDOWN:
+                    teclas.teclas_pressionadas.add(evento.key)
+                elif evento.type == pygame.KEYUP:
+                    teclas.teclas_pressionadas.remove(evento.key)
+               
                 caixa_resposta.atualizar(evento) 
 
                 if evento.type == pygame.KEYDOWN:
@@ -157,8 +160,9 @@ def executar_jogo():
                             delay = 0
                             carta.virar()
 
-                if pressionado(pygame.KEYDOWN):
-                    desafio_aberto = False
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_ESCAPE:
+                        desafio_aberto = False
 
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:
