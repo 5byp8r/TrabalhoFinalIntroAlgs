@@ -66,7 +66,6 @@ tipos_tile = [
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
 
-
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
     pygame.init()
@@ -115,8 +114,7 @@ def executar_jogo():
         npc.atualizar()
 
         if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
-            delay += relogio.get_time()
-            delay = npc.atualizar_dialogos(delay, dialogos)
+            npc.atualizar_dialogos(dialogos)
             if npc.indice_dialogo == -2:
                 desafio_aberto = True
                 npc.indice_dialogo = -3
