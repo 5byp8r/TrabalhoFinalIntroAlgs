@@ -1,6 +1,11 @@
 import pygame
 
-from src.config import ALTURA_TELA, LARGURA_TELA
+from src.config import (
+    ALTURA_TELA,
+    LARGURA_TELA,
+    BRANCO,
+    CINZA
+)
 
 class Carta:
     def __init__(self, x, y, img_frente, img_verso):
@@ -25,3 +30,40 @@ class Carta:
     def virar(self):
         self.mostra_frente = not self.mostra_frente
 
+
+
+
+
+class caixaResposta:
+    def __init__(self, x, y, largura=300, altura=40):
+
+        self.texto = ""
+
+        self.x = x
+        self.y = y
+    
+        self.fonte = pygame.font.Font(None, 36)
+        self.caixa = pygame.Rect(x, y, largura, altura)
+        self.ativo = False
+
+    def atualizar(self, evento):
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+            self.ativo = self.caixa.collidepoint(evento.pos)
+
+        if evento.type == pygame.KEYDOWN and self.ativo:
+            if evento.key == pygame.K_BACKSPACE:
+                self.texto = self.texto[:-1]
+            elif evento.key != pygame.K_RETURN:
+                self.texto += evento.unicode
+
+    def desenhar(self, tela):
+        cor_borda = BRANCO if self.ativo else CINZA
+        pygame.draw.rect(tela, cor_borda, self.caixa, 2)
+        superficie = self.fonte.render(self.texto, True, BRANCO)
+        tela.blit(superficie, (self.caixa.x + 8, self.caixa.y + 8))
+
+    def validar(self, resposta_correta):
+        return self.texto.strip().lower() == resposta_correta.strip().lower()
+
+    def limpar(self):
+        self.texto = ""

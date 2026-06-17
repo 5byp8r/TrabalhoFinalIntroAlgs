@@ -49,13 +49,13 @@ from src.camera import (
     criar_tela
 )    
 
-from src.teclas import pressionado
+from src.teclas import pressionado, teclas_pressionadas
 
 from src.texto import Texto, texto_desafio
 
 from src.personagem import Personagem
 
-from src.desafios import Carta
+from src.desafios import Carta, caixaResposta
 
 tipos_tile = [
     TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
@@ -83,6 +83,7 @@ def executar_jogo():
     pontos = 0
 
     carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
+    caixa_resposta = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 20 , 300, 40)
 
     dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
 
@@ -92,11 +93,6 @@ def executar_jogo():
     objetivo_encontrado = False
     acao_errada = False
     tempo_esgotado = False
-
-    fonte = pygame.font.Font(None, 36)
-    texto = ""
-    ativo = False
-    caixa = pygame.Rect(250, 500, 300, 40)
 
     desafio_aberto = False
 
@@ -123,12 +119,9 @@ def executar_jogo():
             delay = npc.atualizar_dialogos(delay, dialogos)
             if npc.indice_dialogo == -2:
                 desafio_aberto = True
+                npc.indice_dialogo = -3
         else: 
-            delay = 999
-
-        # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
-        jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
-        jogador.hitbox["rect"].y = limitar_valor(jogador.hitbox["rect"].y, 0, ALTURA_TELA - jogador.hitbox["rect"].height)
+            delay = 1000
 
         jogador.desenhar(tela)
         npc.desenhar(tela)
@@ -138,17 +131,35 @@ def executar_jogo():
         if desafio_aberto:
         # Desenha a Carta
             carta.desenhar(tela)
+            caixa_resposta.desenhar(tela)
 
-            if desafio_aberto and evento.type == pygame.MOUSEBUTTONDOWN:
-                if evento.button == 1:
-                    delay += relogio.get_time()
+            for evento in pygame.event.get():
 
-                    if delay >= 300:
-                        delay = 0
-                        carta.virar()
+                if evento.type == pygame.QUIT:
+                    rodando = False  
 
-            if evento.type == pygame.KEYDOWN:
-                if teclas.teclas_pressionadas == pygame.K_ESCAPE:
+                caixa_resposta.atualizar(evento) 
+
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_RETURN:
+                        if caixa_resposta.validar("resposta_correta"):
+                            objetivo_encontrado = True
+                            desafio_aberto = False
+                        else:
+                            acao_errada = True
+                        caixa_resposta.limpar()
+
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    if evento.button == 1:
+
+                        ativo = caixa_resposta.caixa.collidepoint(evento.pos)  # ativa ao clicar na caixa
+                        
+                        delay += relogio.get_time()
+                        if delay >= 300:
+                            delay = 0
+                            carta.virar()
+
+                if pressionado(pygame.KEYDOWN):
                     desafio_aberto = False
 
         #recompensa por pista coletada (gema) e objetivos
