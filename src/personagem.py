@@ -1,69 +1,12 @@
 import pygame
-
+from src.movel import Movel, carregar_frames
 from src.camera import camera
-# recebe o caminho da imagem e a largura de cada frame
-# divide a imagem em pedaços iguais e guarda cada um numa lista
-def carregar_frames(caminho, largura_frame=128):
-    spritesheet = pygame.image.load(caminho).convert_alpha()
-    spritesheet.set_colorkey((0, 0, 0))  # remove o fundo preto da imagem
 
-    # descobre quantos frames tem na imagem dividindo a largura total pela largura de cada frame
-    num_frames = spritesheet.get_width() // largura_frame
-    altura_frame = spritesheet.get_height()
-
-    frames = []
-    for i in range(num_frames):
-        # recorta cada frame da imagem usando a posição x de cada um
-        frame = spritesheet.subsurface((i * largura_frame, 0, largura_frame, altura_frame))
-        frames.append(frame)
-
-    return frames  # retorna a lista com todos os frames recortados
-
-
-class Personagem:
+class Personagem(Movel):
     def __init__(self, x, y):
-        # posição inicial do personagem na tela
-        self.x = x
-        self.y = y
-        self.hitbox = {"rect": pygame.Rect(x, y, 128, 128)} 
-
-        # velocidade normal e velocidade ao segurar shift
-        self.velocidade = 1
-        self.velocidade_corrida = 3
-
-        # estado atual do personagem: começa parado
-        self.estado = "idle"
-        self.estado_anterior = "idle"  # guarda o estado do frame anterior pra saber se mudou
-
-        # controle da animação
-        self.frame_atual = 0   # qual frame da lista está sendo mostrado agora
-        self.contador = 0      # conta quantas iterações do loop já passaram
-
-        # velocidade de cada animação separadamente
-        # quanto menor o número, mais rápido troca os frames
-        self.velocidade_animacao = {
-            "idle":    10,
-            "idle2":   10,
-            "walk":    10,
-            "run":     7,
-            "jump":    8,
-            "attack1": 4,  # ataques são mais rápidos
-            "attack2": 4,
-            "attack3": 4,
-            "hurt":    5,
-            "dead":    8,
-        }
-
-        self.olhando_direita = True  # controla se o sprite precisa ser espelhado ou não
-
-        # quando bloqueado, o personagem não pode fazer outra ação
-        # isso acontece durante ataques, hurt e dead
-        self.bloqueado = False
-
-
         # carrega todas as animações do personagem
         # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
-        self.animacoes = {
+        animacoes = {
             "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
             "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
             "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
@@ -76,7 +19,28 @@ class Personagem:
             "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
         }
 
+        # velocidade de cada animação separadamente
+        # quanto menor o número, mais rápido troca os frames
+        velocidade_animacao = {
+            "idle":    10,
+            "idle2":   10,
+            "walk":    10,
+            "run":     7,
+            "jump":    8,
+            "attack1": 4,  # ataques são mais rápidos
+            "attack2": 4,
+            "attack3": 4,
+            "hurt":    5,
+            "dead":    8,
+        }
 
+        super().__init__(x, y,
+                        hitbox = {"rect": pygame.Rect(x, y, 50, 100)},
+                        velocidade = 1,
+                        velocidade_corrida = 3,
+                        estado = "idle",
+                        velocidade_animacao = velocidade_animacao,
+                        animacoes = animacoes)
 
     def atualizar(self):
         # guarda o estado atual antes de qualquer coisa
@@ -144,34 +108,9 @@ class Personagem:
         if self.estado != self.estado_anterior:
             self.frame_atual = 0
             self.contador = 0
-        
-        self.hitbox["rect"].x = self.x
-        self.hitbox["rect"].y = self.y
 
         # atualiza a câmera para seguir o personagem
         camera.x = self.x - camera.width // 2 + 64
         camera.y = self.y - camera.height // 2 + 64
 
-        self.avancar_animacao()
-
-    def avancar_animacao(self):
-        # incrementa o contador a cada iteração do loop
-        self.contador += 1
-
-        # só troca o frame quando o contador atingir o limite daquele estado
-        if self.contador >= self.velocidade_animacao[self.estado]:
-            self.contador = 0
-            # o % faz o frame voltar pra 0 depois do último, criando o loop da animação
-            self.frame_atual = (self.frame_atual + 1) % len(self.animacoes[self.estado])
-
-    def desenhar(self, tela):
-        # pega o frame atual da animação do estado correto
-        frame = self.animacoes[self.estado][self.frame_atual]
-
-        # se estiver olhando para a esquerda, espelha a imagem horizontalmente
-        # o True no primeiro parâmetro espelha no eixo X, o False no Y não mexe
-        if not self.olhando_direita:
-            frame = pygame.transform.flip(frame, True, False)
-
-        # desenha o frame na posição do personagem
-        tela.blit(frame, (self.x, self.y))
+        super().atualizar()

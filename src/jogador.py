@@ -18,10 +18,10 @@ class Player:
         sprites.append(self)
         self.hitbox = hitbox
         self.velocidade = 5
-    
+
     def delete(self):
         sprites.remove(self)
-        
+
     def update(self):
         
         #COMANDOS WASD
@@ -36,6 +36,6 @@ class Player:
 
         #ATUALIZAR O HITBOX
         self.hitbox["rect"].topleft = (self.x, self.y)
-        
+
         camera.x = self.x - camera.width // 2 + self.image.get_width() // 2
         camera.y = self.y - camera.height // 2 + self.image.get_height() // 2

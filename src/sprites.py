@@ -1,6 +1,6 @@
 import pygame
 from src.camera import camera
-          
+
 sprites = []
 carregado = {} #SPRITES QUE JA FORAM CARREGADOS 
 

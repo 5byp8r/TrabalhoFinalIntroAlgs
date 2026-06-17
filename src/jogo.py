@@ -80,7 +80,6 @@ def executar_jogo():
 
     relogio = pygame.time.Clock()
     delay = 0
-    i = -1
     rodando = True
 
     bat_image    = pegar_sprite(CAMINHO_SPRITES, x=905, y=1060, width=200, height=130, scale=0.5)
@@ -92,7 +91,7 @@ def executar_jogo():
     gema = Sprite(gem_image, 500, 200, gem_hitbox)
 
     jogador = Personagem(LARGURA_TELA // 2, ALTURA_TELA // 2)
-    npc = NPC(LARGURA_TELA // 2, ALTURA_TELA // 2 - 100, "npc_pista1")
+    npc = NPC(LARGURA_TELA // 2, ALTURA_TELA // 2 - 100, "john")
 
     pontos = 0
     vidas = 3
@@ -100,7 +99,7 @@ def executar_jogo():
 
     carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
 
-    dialogos = Texto("assets/textos/npc.json") 
+    dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
 
     pontos = 0
 
@@ -137,11 +136,10 @@ def executar_jogo():
         if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
             delay += relogio.get_time()
             delay = npc.atualizar_dialogos(delay, dialogos)
-            if delay == 0:
+            if npc.indice_dialogo == -2:
                 desafio_aberto = True
         else: 
             delay = 9999
-                    
 
         # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
         jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
@@ -160,7 +158,7 @@ def executar_jogo():
             pygame.draw.rect(tela, (255, 255, 255), caixa, 2)
             texto_surface = fonte.render(texto, True, (255, 255, 255))
             tela.blit(texto_surface, (caixa.x + 5, caixa.y + 5))
-                        
+
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:
             pontos = recompensa_pista(pontos, 10)
