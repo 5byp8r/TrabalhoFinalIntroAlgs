@@ -25,8 +25,8 @@ class Personagem(Movel):
         velocidade_animacao = {
             "idle":    10,
             "idle2":   10,
-            "walk":    10,
-            "run":     7,
+            "walk":    7,
+            "run":     5,
             "jump":    8,
             "attack1": 4,  # ataques são mais rápidos
             "attack2": 4,
@@ -37,8 +37,8 @@ class Personagem(Movel):
 
         super().__init__(x, y,
                         hitbox = {"rect": pygame.Rect(x, y, 50, 100)},
-                        velocidade = 1,
-                        velocidade_corrida = 3,
+                        velocidade = 2,
+                        velocidade_corrida = 4,
                         estado = "idle",
                         velocidade_animacao = velocidade_animacao,
                         animacoes = animacoes)
