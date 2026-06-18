@@ -43,6 +43,7 @@ from src.camera import (
     criar_tela
 )    
 
+from src.personagem import carregar_frames
 from src.texto import Texto, texto_desafio
 
 from src.jogador import Jogador
@@ -68,8 +69,73 @@ def executar_jogo():
     delay = 0
     rodando = True
 
-    jogador = Jogador(LARGURA_TELA // 2, ALTURA_TELA // 2)
-    npc = NPC("john", LARGURA_TELA // 2, ALTURA_TELA // 2 - 100)
+    # carrega todas as animações do jogador
+    # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
+    animacoes_jogador = {
+        "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
+        "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
+        "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
+        "run":     carregar_frames("assets/imagens/personagem_principal/Run.png"),
+        "jump":    carregar_frames("assets/imagens/personagem_principal/Jump.png"),
+        "attack1": carregar_frames("assets/imagens/personagem_principal/Attack_1.png"),
+        "attack2": carregar_frames("assets/imagens/personagem_principal/Attack_2.png"),
+        "attack3": carregar_frames("assets/imagens/personagem_principal/Attack_3.png"),
+        "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
+        "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
+    }
+
+    # carrega todas as animações do npc
+    animacoes_npc = {
+        "idle":    carregar_frames("assets/imagens/npc_1/Idle.png"),
+        "walk":    carregar_frames("assets/imagens/npc_1/Walk.png"),
+        "run":     carregar_frames("assets/imagens/npc_1/Run.png"),
+        "attack":  carregar_frames("assets/imagens/npc_1/Attack.png"),
+        "hurt":    carregar_frames("assets/imagens/npc_1/Hurt.png"),
+        "dead":    carregar_frames("assets/imagens/npc_1/Dead.png"),
+    }
+
+    # velocidade de cada animação do jogador separadamente
+    # quanto menor o número, mais rápido troca os frames
+    velocidade_animacao_jogador = {
+        "idle":    10,
+        "idle2":   10,
+        "walk":    5,
+        "run":     5,
+        "jump":    8,
+        "attack1": 4,  # ataques são mais rápidos
+        "attack2": 4,
+        "attack3": 4,
+        "hurt":    5,
+        "dead":    8,
+    }
+
+    # velocidade de cada animação do npc separadamente
+    velocidade_animacao_npc = {
+        "idle":    10,
+        "walk":    10,
+        "run":     7,
+        "attack":  4,  # ataques são mais rápidos
+        "hurt":    5,
+        "dead":    8,
+    }
+
+    jogador = Jogador(  LARGURA_TELA // 2, ALTURA_TELA // 2,
+                        largura = 50, 
+                        altura = 100,
+                        velocidade = 2,
+                        velocidade_corrida = 4,
+                        estado = "idle",
+                        velocidade_animacao = velocidade_animacao_jogador,
+                        animacoes = animacoes_jogador)
+
+    npc = NPC(          "john", LARGURA_TELA // 2, ALTURA_TELA // 2 - 100,
+                        largura = 50, 
+                        altura = 100,
+                        velocidade = 0,
+                        velocidade_corrida = 0,
+                        estado = "idle",
+                        velocidade_animacao = velocidade_animacao_npc,
+                        animacoes = animacoes_npc)
 
     pontos = 0
 

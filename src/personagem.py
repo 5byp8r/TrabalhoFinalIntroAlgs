@@ -19,11 +19,11 @@ def carregar_frames(caminho, largura_frame=128):
     return frames  # retorna a lista com todos os frames recortados
 
 class Personagem:
-    def __init__(self, x, y, hitbox, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao):
+    def __init__(self, x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao):
         # posição inicial do personagem na tela
         self.x = x
         self.y = y
-        self.hitbox = hitbox 
+        self.hitbox = {"rect": pygame.Rect(x, y, largura, altura)} 
 
         # velocidade normal e velocidade ao segurar shift
         self.velocidade = velocidade
