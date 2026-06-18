@@ -79,8 +79,5 @@ class caixaResposta:
 
         return delay
 
-    def validar(self, resposta_correta):
-        return self.texto.strip().lower() == resposta_correta.strip().lower()
-
     def limpar(self):
         self.texto = ""

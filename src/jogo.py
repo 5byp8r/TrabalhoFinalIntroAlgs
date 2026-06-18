@@ -1,4 +1,5 @@
 import pygame
+
 from src.map import (
     TipoTile,
     MAPA,
@@ -19,6 +20,7 @@ from src.config import (
     tamanho_tile,
     CAMINHO_RECORDE,
     CAMINHO_SPRITES,
+    CAMINHO_RANKING
 )
 
 from src import entradas
@@ -33,7 +35,8 @@ from src.funcoes import (
     recompensa_objetivo,
     punicao_erro,
     punicao_tempo,
-    abrir_desafio
+    abrir_desafio,
+    validar_resposta,
 )
 
 from src.npc import NPC
@@ -50,6 +53,13 @@ from src.jogador import Jogador
 
 from src.desafios import Carta, caixaResposta
 
+from src.dados import (
+    salvar_recorde,
+    carregar_recorde,
+    salvar_ranking,
+    carregar_ranking
+)
+
 tipos_tile = [
     TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
     TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
@@ -58,6 +68,7 @@ tipos_tile = [
 ]
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
+
 
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
@@ -141,11 +152,11 @@ def executar_jogo():
 
     carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
     caixa_resposta = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 50 , 300, 40)
+    caixa_insert = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 50 , 300, 40)
+    caixa_insert.texto = "Nome"
 
     dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
-
-    pontos = 0
-
+    
     pista_encontrada = False
     objetivo_encontrado = False
     acao_errada = False
@@ -179,22 +190,37 @@ def executar_jogo():
         jogador.atualizar()
         npc.atualizar()
 
-        if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
-            npc.atualizar_dialogos(dialogos)
-            if npc.indice_dialogo == -2:
-                desafio_aberto = True
-                npc.indice_dialogo = -3
-
         jogador.desenhar(tela)
         npc.desenhar(tela)
         npc.desenhar_dialogos(tela, dialogos)
+
+        if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
+            npc.atualizar_dialogos(dialogos)
+
+            if npc.indice_dialogo == 1:
+                caixa_insert.atualizar() 
+
+                if entradas.clicado(pygame.K_RETURN):
+                    jogador.nome = caixa_insert.texto
+                    npc.indice_dialogo += 1
+
+                if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
+                    ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
+
+                delay += relogio.get_time()
+                caixa_insert.desenhar(tela)
+                delay = caixa_insert.desenhar(tela, delay)
+            
+            if npc.indice_dialogo == -2:
+                desafio_aberto = True
+                npc.indice_dialogo = -3
 
         #chamando desfaio
         if desafio_aberto:
             caixa_resposta.atualizar() 
 
             if entradas.clicado(pygame.K_RETURN):
-                if caixa_resposta.validar("resposta_correta"):
+                if validar_resposta(caixa_resposta.texto,"resposta_correta"):
                     objetivo_encontrado = True
                     desafio_aberto = False
                 else:
@@ -227,6 +253,14 @@ def executar_jogo():
 
         if tempo_esgotado:
             pontos = punicao_tempo(pontos, 30)
+
+        if pontos > recorde:
+            recorde = pontos
+            salvar_recorde(CAMINHO_RECORDE, recorde)
+
+        if jogo_encerrado:
+            salvar_ranking(CAMINHO_RANKING, jogador.nome, pontos)
+            carregar_ranking(CAMINHO_RANKING)
 
         frame_atual += 1 
         if frame_atual >= tempo_limite:

@@ -15,5 +15,6 @@ PATH = (23, 23, 23)
 
 tamanho_tile = 32
 
+CAMINHO_RANKING = "data/ranking.txt" 
 CAMINHO_RECORDE = "data/recorde.txt"
 CAMINHO_SPRITES = "assets/imagens/spritesheet.bmp"

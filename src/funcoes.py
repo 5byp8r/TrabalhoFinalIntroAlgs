@@ -44,3 +44,6 @@ def punicao_tempo(pontos_atual, punicao_tempo):
 
 def abrir_desafio(desafio_aberto):
     return True
+
+def validar_resposta(resposta_inserida, resposta_correta):
+    return resposta_inserida == resposta_correta

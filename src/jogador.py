@@ -5,7 +5,7 @@ from src.entradas import pressionado
 
 class Jogador(Personagem):
     def __init__(self, x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao):
-
+        self.nome = ""
         super().__init__(x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao)
 
     def atualizar(self):
