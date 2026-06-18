@@ -60,11 +60,14 @@ tipos_tile = [
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
 
+screen = None
+
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
     pygame.init()
     
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
+    screen = tela
 
     relogio = pygame.time.Clock()
     rodando = True
