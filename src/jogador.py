@@ -1,5 +1,5 @@
 import pygame
-from src.teclas import pressionado
+from src.entradas import pressionado
 from src.sprites import (
     sprites,
     carregado

@@ -1,6 +1,6 @@
 import pygame
 from src.movel import Movel, carregar_frames
-from src.teclas import pressionado
+from src.entradas import clicado
 from src.texto import Texto
 from src.camera import camera
 
@@ -12,8 +12,6 @@ class NPC(Movel):
         # -1 = não falou ainda
         # -2 = falou todos os diálogos
         self.indice_dialogo = -1
-
-        self.travar_dialogo = False
 
         # velocidade de cada animação separadamente
         # quanto menor o número, mais rápido troca os frames
@@ -62,12 +60,9 @@ class NPC(Movel):
 
     def atualizar_dialogos(self, dialogos: Texto):
         #atualiza o índice do diálogo
-        if pressionado(pygame.K_SPACE) and (not self.travar_dialogo) and (not self.indice_dialogo == -2):
-            self.travar_dialogo = True
+        if clicado(pygame.K_SPACE) and (not self.indice_dialogo == -2):
             self.indice_dialogo+=1
             if self.indice_dialogo >= len(dialogos._textos[self.nome + "_pista"]): self.indice_dialogo = -2 # se os diálogos chegaram ao final, atualiza com -2
-        elif not pressionado(pygame.K_SPACE) and self.travar_dialogo:
-            self.travar_dialogo = False
 
     def desenhar_dialogos(self, tela, dialogos: Texto): 
         dialogos.desenhar(tela, self.nome + "_pista", self.indice_dialogo)  # desenha os dialogos

@@ -21,7 +21,7 @@ from src.config import (
     CAMINHO_SPRITES,
 )
 
-from src import teclas
+from src import entradas
 
 from src.funcoes import (
     calcular_pontos,
@@ -48,8 +48,6 @@ from src.camera import (
     camera,
     criar_tela
 )    
-
-from src.teclas import pressionado, teclas_pressionadas
 
 from src.texto import Texto, texto_desafio
 
@@ -101,13 +99,19 @@ def executar_jogo():
     while rodando:
         relogio.tick(FPS)
 
+        entradas.teclas_clicadas.clear()
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
             if evento.type == pygame.KEYDOWN:
-                teclas.teclas_pressionadas.add(evento.key)
-            elif evento.type == pygame.KEYUP:
-                teclas.teclas_pressionadas.remove(evento.key)
+                entradas.adicionar_tecla(evento.key, evento.unicode)
+            if evento.type == pygame.KEYUP:
+                entradas.deletar_tecla(evento.key)
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                entradas.adicionar_tecla(evento.type * evento.button, evento.pos)
+            if evento.type == pygame.MOUSEBUTTONUP:
+                entradas.deletar_tecla((evento.type - 1) * evento.button)
 
         # Desenhando o mapa na tela quando a camera é 0
         tela.fill(PRETO)
@@ -120,8 +124,6 @@ def executar_jogo():
             if npc.indice_dialogo == -2:
                 desafio_aberto = True
                 npc.indice_dialogo = -3
-        else: 
-            delay = 1000
 
         jogador.desenhar(tela)
         npc.desenhar(tela)
@@ -129,42 +131,28 @@ def executar_jogo():
 
         #chamando desfaio
         if desafio_aberto:
-        # Desenha a Carta
+            caixa_resposta.atualizar() 
+
+            if entradas.clicado(pygame.K_RETURN):
+                if caixa_resposta.validar("resposta_correta"):
+                    objetivo_encontrado = True
+                    desafio_aberto = False
+                else:
+                    acao_errada = True
+                caixa_resposta.limpar()
+
+            if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
+                ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
+
+                if not ativo: carta.virar()
+
+            delay += relogio.get_time()
+            # Desenha a Carta
             carta.desenhar(tela)
-            caixa_resposta.desenhar(tela)
+            delay = caixa_resposta.desenhar(tela, delay)
 
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    rodando = False
-                if evento.type == pygame.KEYDOWN:
-                    teclas.teclas_pressionadas.add(evento.key)
-                elif evento.type == pygame.KEYUP:
-                    teclas.teclas_pressionadas.remove(evento.key)
-               
-                caixa_resposta.atualizar(evento) 
-
-                if evento.type == pygame.KEYDOWN:
-                    if evento.key == pygame.K_RETURN:
-                        if caixa_resposta.validar("resposta_correta"):
-                            objetivo_encontrado = True
-                            desafio_aberto = False
-                        else:
-                            acao_errada = True
-                        caixa_resposta.limpar()
-
-                if evento.type == pygame.MOUSEBUTTONDOWN:
-                    if evento.button == 1:
-
-                        ativo = caixa_resposta.caixa.collidepoint(evento.pos)  # ativa ao clicar na caixa
-                        
-                        delay += relogio.get_time()
-                        if delay >= 300:
-                            delay = 0
-                            carta.virar()
-
-                if evento.type == pygame.KEYDOWN:
-                    if evento.key == pygame.K_ESCAPE:
-                        desafio_aberto = False
+            if entradas.clicado(pygame.K_ESCAPE):
+                desafio_aberto = False
 
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:

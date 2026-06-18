@@ -1,7 +1,7 @@
 import pygame
 from src.movel import Movel, carregar_frames
 from src.camera import camera
-from src.teclas import pressionado
+from src.entradas import pressionado
 
 class Personagem(Movel):
     def __init__(self, x, y):

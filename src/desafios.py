@@ -1,5 +1,6 @@
 import pygame
 
+from src import entradas
 from src.config import (
     ALTURA_TELA,
     LARGURA_TELA,
@@ -7,6 +8,7 @@ from src.config import (
     CINZA,
     PRETO
 )
+from src.entradas import clicado
 
 class Carta:
     def __init__(self, x, y, img_frente, img_verso):
@@ -39,6 +41,7 @@ class caixaResposta:
     def __init__(self, x, y, largura=300, altura=40):
 
         self.texto = "decifre"
+        self.final = ""
 
         self.x = x
         self.y = y
@@ -47,27 +50,34 @@ class caixaResposta:
         self.caixa = pygame.Rect(x, y, largura, altura)
         self.ativo = False
 
-    def atualizar(self, evento):
-        if evento.type == pygame.MOUSEBUTTONDOWN:
-            self.ativo = self.caixa.collidepoint(evento.pos)
+    def atualizar(self):
+        if clicado(pygame.MOUSEBUTTONDOWN * 1):
+            self.ativo = self.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])
 
-        if evento.type == pygame.KEYDOWN and self.ativo:
-            if evento.key == pygame.K_BACKSPACE:
+        if self.ativo:
+            if clicado(pygame.K_BACKSPACE):
                 self.texto = self.texto[:-1]
-            elif evento.key != pygame.K_RETURN:
-                self.texto += evento.unicode
+            elif not clicado(pygame.K_RETURN):
+                for string in entradas.teclas_clicadas.values():
+                    if isinstance(string, str): self.texto += string
 
-    def desenhar(self, tela):
+    def desenhar(self, tela, delay = 0):
         surface_fundo = pygame.Surface((self.caixa.width, self.caixa.height))
         surface_fundo.set_alpha(180)        
         surface_fundo.fill(BRANCO)
         tela.blit(surface_fundo, (self.caixa.x, self.caixa.y))
 
+        if delay >= 500:
+            self.final = "|" if self.final == "" and self.ativo else ""
+            delay = 0
+
         cor_borda = BRANCO if self.ativo else CINZA
         pygame.draw.rect(tela, cor_borda, self.caixa, 2)  # borda
 
-        superficie = self.fonte.render(self.texto, True, PRETO)
+        superficie = self.fonte.render(self.texto + self.final, True, PRETO)
         tela.blit(superficie, (self.caixa.x + 8, self.caixa.y + 8))
+
+        return delay
 
     def validar(self, resposta_correta):
         return self.texto.strip().lower() == resposta_correta.strip().lower()
