@@ -36,12 +36,6 @@ from src.funcoes import (
     abrir_desafio
 )
 
-from src.sprites import (
-    Sprite,
-    sprites,
-    pegar_sprite,
-)
-
 from src.npc import NPC
 
 from src.camera import (
@@ -51,7 +45,7 @@ from src.camera import (
 
 from src.texto import Texto, texto_desafio
 
-from src.personagem import Personagem
+from src.jogador import Jogador
 
 from src.desafios import Carta, caixaResposta
 
@@ -74,8 +68,8 @@ def executar_jogo():
     delay = 0
     rodando = True
 
-    jogador = Personagem(LARGURA_TELA // 2, ALTURA_TELA // 2)
-    npc = NPC(LARGURA_TELA // 2, ALTURA_TELA // 2 - 100, "john")
+    jogador = Jogador(LARGURA_TELA // 2, ALTURA_TELA // 2)
+    npc = NPC("john", LARGURA_TELA // 2, ALTURA_TELA // 2 - 100)
 
     pontos = 0
 
@@ -167,10 +161,10 @@ def executar_jogo():
 
         if tempo_esgotado:
             pontos = punicao_tempo(pontos, 30)
-            
+
         frame_atual += 1 
         if frame_atual >= tempo_limite:
             tempo_esgotado = True
         pygame.display.flip()
-        
+
     pygame.quit()

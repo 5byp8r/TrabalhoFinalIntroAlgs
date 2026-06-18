@@ -18,7 +18,7 @@ class Carta:
 
         self.frente_image = pygame.transform.scale(img_frente,(LARGURA_TELA,ALTURA_TELA)) 
         self.verso_image = pygame.transform.scale(img_verso,(LARGURA_TELA,ALTURA_TELA)) 
-        
+
         self.x = x
         self.y = y
 

@@ -1,11 +1,11 @@
 import pygame
-from src.movel import Movel, carregar_frames
+from src.personagem import Personagem, carregar_frames
 from src.entradas import clicado
 from src.texto import Texto
 from src.camera import camera
 
-class NPC(Movel):
-    def __init__(self, x, y, nome):
+class NPC(Personagem):
+    def __init__(self, nome, x, y):
         self.nome = nome # nome do npc
 
         # índice do diálogo do npc
