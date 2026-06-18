@@ -4,44 +4,9 @@ from src.camera import camera
 from src.entradas import pressionado
 
 class Jogador(Personagem):
-    def __init__(self, x, y):
-        # carrega todas as animações do personagem
-        # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
-        animacoes = {
-            "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
-            "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
-            "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
-            "run":     carregar_frames("assets/imagens/personagem_principal/Run.png"),
-            "jump":    carregar_frames("assets/imagens/personagem_principal/Jump.png"),
-            "attack1": carregar_frames("assets/imagens/personagem_principal/Attack_1.png"),
-            "attack2": carregar_frames("assets/imagens/personagem_principal/Attack_2.png"),
-            "attack3": carregar_frames("assets/imagens/personagem_principal/Attack_3.png"),
-            "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
-            "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
-        }
+    def __init__(self, x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao):
 
-        # velocidade de cada animação separadamente
-        # quanto menor o número, mais rápido troca os frames
-        velocidade_animacao = {
-            "idle":    10,
-            "idle2":   10,
-            "walk":    5,
-            "run":     5,
-            "jump":    8,
-            "attack1": 4,  # ataques são mais rápidos
-            "attack2": 4,
-            "attack3": 4,
-            "hurt":    5,
-            "dead":    8,
-        }
-
-        super().__init__(x, y,
-                        hitbox = {"rect": pygame.Rect(x, y, 50, 100)},
-                        velocidade = 2,
-                        velocidade_corrida = 4,
-                        estado = "idle",
-                        velocidade_animacao = velocidade_animacao,
-                        animacoes = animacoes)
+        super().__init__(x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao)
 
     def atualizar(self):
         # guarda o estado atual antes de qualquer coisa

@@ -5,7 +5,7 @@ from src.texto import Texto
 from src.camera import camera
 
 class NPC(Personagem):
-    def __init__(self, nome, x, y):
+    def __init__(self, nome, x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao):
         self.nome = nome # nome do npc
 
         # índice do diálogo do npc
@@ -13,39 +13,11 @@ class NPC(Personagem):
         # -2 = falou todos os diálogos
         self.indice_dialogo = -1
 
-        # velocidade de cada animação separadamente
-        # quanto menor o número, mais rápido troca os frames
-        velocidade_animacao = {
-            "idle":    10,
-            "walk":    10,
-            "run":     7,
-            "attack":  4,  # ataques são mais rápidos
-            "hurt":    5,
-            "dead":    8,
-        }
-
-        # carrega todas as animações do personagem
-        # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
-        animacoes = {
-            "idle":    carregar_frames("assets/imagens/npc_1/Idle.png"),
-            "walk":    carregar_frames("assets/imagens/npc_1/Walk.png"),
-            "run":     carregar_frames("assets/imagens/npc_1/Run.png"),
-            "attack":  carregar_frames("assets/imagens/npc_1/Attack.png"),
-            "hurt":    carregar_frames("assets/imagens/npc_1/Hurt.png"),
-            "dead":    carregar_frames("assets/imagens/npc_1/Dead.png"),
-        }
-
         # armazena a posição inicial da câmera
         self.last_camerax = camera.x
         self.last_cameray = camera.y
 
-        super().__init__(x, y,
-                        hitbox = {"rect": pygame.Rect(x, y, 50, 100)},
-                        velocidade = 1,
-                        velocidade_corrida = 3,
-                        estado = "idle",
-                        velocidade_animacao = velocidade_animacao,
-                        animacoes = animacoes)
+        super().__init__(x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao)
 
     def atualizar(self):
         #atualiza a posição do personagem em relação à câmera
