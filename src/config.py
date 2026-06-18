@@ -8,7 +8,7 @@ TITULO_JOGO = "DRECUT: Fragmentos da verdade"
 
 BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
-CINZA = (212,212,212)
+CINZA = (212,212,212,200)
 GRASS = (34, 139, 34)
 BORDER = (0, 0, 0)
 PATH = (23, 23, 23)

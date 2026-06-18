@@ -25,3 +25,22 @@ def limitar_valor(valor, minimo, maximo):
 def verificar_colisao(retangulo_1, retangulo_2):
     """Verifica sobreposição entre dois retângulos do Pygame."""
     return retangulo_1.colliderect(retangulo_2)
+
+def recompensa_pista(pontos_atual, pontos_pista):
+    """Essa função da ao jogador pontos por coletar pistas espalhadas pelo mapa."""
+    return pontos_atual + pontos_pista
+
+def recompensa_objetivo(pontos_atual, pontos_objetivo):
+    """Essa função dá ao jogador pontos após concluir objetivos."""
+    return pontos_atual + pontos_objetivo
+
+def punicao_erro(pontos_atual, punicao_ponto):
+    """Essa função pune o jogador por erros ao tentarem completar o objetivo."""
+    return pontos_atual - punicao_ponto
+
+def punicao_tempo(pontos_atual, punicao_tempo):
+    """Essa função pune o jogador por tempo esgotado."""
+    return pontos_atual - punicao_tempo
+
+def abrir_desafio(desafio_aberto):
+    return True
