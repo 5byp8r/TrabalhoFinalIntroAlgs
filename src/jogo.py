@@ -32,7 +32,8 @@ from src.funcoes import (
     recompensa_pista,
     recompensa_objetivo,
     punicao_erro,
-    punicao_tempo
+    punicao_tempo,
+    abrir_desafio
 )
 
 from src.sprites import (
@@ -41,20 +42,23 @@ from src.sprites import (
     pegar_sprite,
 )
 
-from src.dados import (
-    salvar_recorde,
-    carregar_recorde,
-)
-
-from src.jogador import Player
+from src.npc import NPC
 
 from src.camera import (
     camera,
     criar_tela
 )    
 
+from src.teclas import pressionado, teclas_pressionadas
+
+from src.texto import Texto, texto_desafio
+
+from src.personagem import Personagem
+
+from src.desafios import Carta, caixaResposta
+
 tipos_tile = [
-    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_040.png", False),
+    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
     TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
     TipoTile("grass", "assets/imagens/Tiles/GK_JC_Free_047.png", False),
     TipoTile("path", "assets/imagens/Tiles/GK_JC_Free_041.png", False)
@@ -69,23 +73,18 @@ def executar_jogo():
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
 
     relogio = pygame.time.Clock()
+    delay = 0
     rodando = True
 
-    bat_image    = pegar_sprite(CAMINHO_SPRITES, x=905, y=1060, width=200, height=130, scale=0.5)
-    bat_hitbox = {"rect": bat_image.get_rect(topleft=(300, 400))}
-    inimigo = Sprite(bat_image, 300, 400, bat_hitbox)
-
-    gem_image    = pegar_sprite(CAMINHO_SPRITES, x=900, y=690, width=200, height=200, scale=0.5)
-    gem_hitbox = {"rect": gem_image.get_rect(topleft=(500 , 200))}
-    gema = Sprite(gem_image, 500, 200, gem_hitbox)
-
-    jogador_image =    pegar_sprite(CAMINHO_SPRITES, x=110, y=120, width=190, height=190, scale=0.5)
-    jogador_hitbox = {"rect": jogador_image.get_rect(topleft=(LARGURA_TELA // 2, ALTURA_TELA // 2))}
-    jogador = Player(jogador_image, (LARGURA_TELA - jogador_image.get_width()) // 2, (ALTURA_TELA - jogador_image.get_height()) // 2, jogador_hitbox)
+    jogador = Personagem(LARGURA_TELA // 2, ALTURA_TELA // 2)
+    npc = NPC(LARGURA_TELA // 2, ALTURA_TELA // 2 - 100, "john")
 
     pontos = 0
-    vidas = 3
-    recorde = carregar_recorde(CAMINHO_RECORDE)
+
+    carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
+    caixa_resposta = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 50 , 300, 40)
+
+    dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
 
     pontos = 0
 
@@ -95,6 +94,8 @@ def executar_jogo():
     tempo_esgotado = False
     tempo_limite = FPS * 30
     frame_atual = 0
+
+    desafio_aberto = False
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -108,60 +109,63 @@ def executar_jogo():
             elif evento.type == pygame.KEYUP:
                 teclas.teclas_pressionadas.remove(evento.key)
 
-
         # Desenhando o mapa na tela quando a camera é 0
         tela.fill(PRETO)
         mapa.desenhar_mapa(tela)
-        jogador.update()
+        jogador.atualizar()
+        npc.atualizar()
 
-        
-        # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
-        jogador.hitbox["rect"].x = limitar_valor(jogador.hitbox["rect"].x, 0, LARGURA_TELA - jogador.hitbox["rect"].width)
-        jogador.hitbox["rect"].y = limitar_valor(jogador.hitbox["rect"].y, 0, ALTURA_TELA - jogador.hitbox["rect"].height)
+        if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
+            npc.atualizar_dialogos(dialogos)
+            if npc.indice_dialogo == -2:
+                desafio_aberto = True
+                npc.indice_dialogo = -3
+        else: 
+            delay = 1000
 
-        # Verificação de colisão com a Gema (antigo 'item')
-        if verificar_colisao(jogador.hitbox["rect"], gema.hitbox["rect"]):
-            pontos = calcular_pontos(pontos, 10)
+        jogador.desenhar(tela)
+        npc.desenhar(tela)
+        npc.desenhar_dialogos(tela, dialogos)
 
-            # Move a gema de lugar ao coletar
-            gema.hitbox["rect"].x += 80
-            gema.hitbox["rect"].y += 50
+        #chamando desfaio
+        if desafio_aberto:
+        # Desenha a Carta
+            carta.desenhar(tela)
+            caixa_resposta.desenhar(tela)
 
-            # Se a gema sair da tela, volta para uma posição segura
-            if gema.hitbox["rect"].x > LARGURA_TELA - gema.hitbox["rect"].width:
-                gema.hitbox["rect"].x = 50
-            if gema.hitbox["rect"].y > ALTURA_TELA - gema.hitbox["rect"].height:
-                gema.hitbox["rect"].y = 50
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    rodando = False
+                if evento.type == pygame.KEYDOWN:
+                    teclas.teclas_pressionadas.add(evento.key)
+                elif evento.type == pygame.KEYUP:
+                    teclas.teclas_pressionadas.remove(evento.key)
+               
+                caixa_resposta.atualizar(evento) 
 
-        # Verificação de colisão com o Inimigo
-        if verificar_colisao(jogador.hitbox["rect"], inimigo.hitbox["rect"]):
-            vidas = tomar_dano(vidas, 1)
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_RETURN:
+                        if caixa_resposta.validar("resposta_correta"):
+                            objetivo_encontrado = True
+                            desafio_aberto = False
+                        else:
+                            acao_errada = True
+                        caixa_resposta.limpar()
 
-            # Afasta o inimigo ao colidir
-            inimigo.hitbox["rect"].x += 80
-            inimigo.hitbox["rect"].y += 50
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    if evento.button == 1:
 
-            if inimigo.hitbox["rect"].x > LARGURA_TELA - inimigo.hitbox["rect"].width:
-                inimigo.hitbox["rect"].x = 50
-            if inimigo.hitbox["rect"].y > ALTURA_TELA - inimigo.hitbox["rect"].height:
-                inimigo.hitbox["rect"].y = 50
+                        ativo = caixa_resposta.caixa.collidepoint(evento.pos)  # ativa ao clicar na caixa
+                        
+                        delay += relogio.get_time()
+                        if delay >= 300:
+                            delay = 0
+                            carta.virar()
 
-        # Regras de fim de jogo e recorde
-        if jogador_perdeu(vidas):
-            rodando = False
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_ESCAPE:
+                        desafio_aberto = False
 
-        if pontos > recorde:
-            recorde = pontos
-            salvar_recorde(CAMINHO_RECORDE, recorde)
-
-        pygame.display.set_caption(
-            f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
-        )
-
-        for s in sprites:
-
-            tela.blit(s.image, s.hitbox["rect"])
-        
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:
             pontos = recompensa_pista(pontos, 10)
