@@ -7,7 +7,7 @@ from src.sprites import (
 from src.camera import camera
 
 class Player:
-    def __init__(self, image, x , y, hitbox):
+    def __init__(self, image, x , y, hitbox, vidas=3):
         if image in carregado: #SE O SPRITE ESTIVER CARREGAO ELE APENAS PEGA DO DICIONÁRIO
             self.image = carregado[image]
         else:
@@ -18,6 +18,7 @@ class Player:
         sprites.append(self)
         self.hitbox = hitbox
         self.velocidade = 5
+
     
     def delete(self):
         sprites.remove(self)
@@ -39,3 +40,6 @@ class Player:
         
         camera.x = self.x - camera.width // 2 + self.image.get_width() // 2
         camera.y = self.y - camera.height // 2 + self.image.get_height() // 2
+
+
+

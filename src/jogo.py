@@ -93,6 +93,8 @@ def executar_jogo():
     objetivo_encontrado = False
     acao_errada = False
     tempo_esgotado = False
+    tempo_limite = FPS * 30
+    frame_atual = 0
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -173,6 +175,10 @@ def executar_jogo():
 
         if tempo_esgotado:
             pontos = punicao_tempo(pontos, 30)
+            
+        frame_atual += 1 
+        if frame_atual >= tempo_limite:
+            tempo_esgotado = True
         pygame.display.flip()
         
     pygame.quit()
