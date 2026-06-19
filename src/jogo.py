@@ -69,6 +69,10 @@ def executar_jogo():
     
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
     screen = tela
+    continuar = main_menu(tela, LARGURA_TELA, ALTURA_TELA)
+    if not continuar:
+        pygame.quit()
+        return
 
     relogio = pygame.time.Clock()
     delay = 0
@@ -98,7 +102,7 @@ def executar_jogo():
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
 
-        main_menu()
+
 
         relogio.tick(FPS)
 

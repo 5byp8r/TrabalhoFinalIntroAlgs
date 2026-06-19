@@ -1,34 +1,77 @@
-from src.button import Button
-from src.camera import (criar_tela)
+import pygame
 
-import pygame, sys
-
-from src.config import ALTURA_TELA, LARGURA_TELA, TITULO_JOGO
-BG = pygame.image.load("assets/imagens/botoes/background.png")
-tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
+BRANCO = (255, 255, 255)
+AZUL_TRANSLUCIDO = (0, 80, 200, 180)
+AZUL_HOVER = (0, 140, 255, 220)
+SOMBRA = (0, 0, 0)
 
 
-def main_menu(): 
+class Button:
+    def __init__(self, text, center_y, action, largura_tela):
+        self.text = text
+        self.action = action
+        self.center_y = center_y
+        self.widht, self.height = 320, 70
+        self.rect = pygame.Rect((0, 0, self.widht, self.height))
+        self.rect.center = (largura_tela // 2, center_y)
 
-    tela.blit(BG, (0,0))
+    def draw(self, win, mouse_pos, fonte_botao):
+        is_hover = self.rect.collidepoint(mouse_pos)
+        color = AZUL_HOVER if is_hover else AZUL_TRANSLUCIDO
+        superficie_botao = pygame.Surface((self.widht, self.height), pygame.SRCALPHA)
+        pygame.draw.rect(superficie_botao, color, (0, 0, self.widht, self.height), border_radius=16)
+        win.blit(superficie_botao, self.rect)
 
-    MENU_MOUSE_POS = pygame.mouse.get_pos()
+        text_surf = fonte_botao.render(self.text, True, BRANCO)
+        text_rect = text_surf.get_rect(center=self.rect.center)
 
-    MENU_TEXT = pygame.font.Font(None, 100).render("DRECUT", True, "#FFFFFF")
-    MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+        shadow = fonte_botao.render(self.text, True, SOMBRA)
+        win.blit(shadow, (text_rect.x + 2, text_rect.y + 2))
+        win.blit(text_surf, text_rect)
 
-    PLAY_BUTTON = Button(image=pygame.image.load("assets/imagens/botoes/play.png"), pos=(640, 250),text_input="PLAY",font=pygame.font.Font(None, 100), base_color="White", hovering_color="Green")
+    def clicado(self, mouse_pos, mouse_pressed):
+        return self.rect.collidepoint(mouse_pos) and mouse_pressed[0]
 
-    tela.blit(MENU_TEXT, MENU_RECT)
 
-    for button in [PLAY_BUTTON]:
-        button.changeColor(MENU_MOUSE_POS)
-        button.update(tela)
+def main_menu(tela, largura_tela, altura_tela):
+    """Mostra o menu e fica nele até o jogador clicar em Jogar ou Sair.
+    Retorna True para seguir pro jogo, False para fechar tudo."""
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                return True
+    background = pygame.image.load("assets/imagens/botoes/background.png")
+    background = pygame.transform.scale(background, (largura_tela, altura_tela))
+
+    fonte_titulo = pygame.font.SysFont(None, 72)
+    fonte_botao = pygame.font.SysFont(None, 36)
+
+    botoes = [
+        Button("Iniciar Jogo", 320, "Jogar", largura_tela),
+        Button("Sair do jogo", 420, "Sair", largura_tela),
+    ]
+
+    clock = pygame.time.Clock()
+
+    while True:
+        clock.tick(60)
+        tela.blit(background, (0, 0))
+
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+
+        titulo = fonte_titulo.render("DRECUT", True, BRANCO)
+        shadow = fonte_titulo.render("DRECUT", True, SOMBRA)
+        tela.blit(shadow, (largura_tela // 2 - titulo.get_width() // 2 + 3, 103))
+        tela.blit(titulo, (largura_tela // 2 - titulo.get_width() // 2, 100))
+
+        for btn in botoes:
+            btn.draw(tela, mouse_pos, fonte_botao)
+            if btn.clicado(mouse_pos, mouse_pressed):
+                if btn.action == "Jogar":
+                    return True
+                elif btn.action == "Sair":
+                    return False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+
+        pygame.display.flip()
