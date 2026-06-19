@@ -69,7 +69,6 @@ tipos_tile = [
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
 
-
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
     pygame.init()
@@ -166,6 +165,10 @@ def executar_jogo():
 
     desafio_aberto = False
 
+    recorde = carregar_recorde(CAMINHO_RECORDE)
+
+    jogo_encerrado = False
+
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
         relogio.tick(FPS)
@@ -195,32 +198,40 @@ def executar_jogo():
         npc.desenhar_dialogos(tela, dialogos)
 
         if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
-            npc.atualizar_dialogos(dialogos)
 
             if npc.indice_dialogo == 1:
-                caixa_insert.atualizar() 
+                caixa_insert.atualizar()
 
                 if entradas.clicado(pygame.K_RETURN):
                     jogador.nome = caixa_insert.texto
-                    npc.indice_dialogo += 1
+                    if not validar_resposta(jogador.nome, "Nome"):
+                        npc.indice_dialogo += 1
+
+                if entradas.clicado(pygame.K_SPACE):
+                    npc.indice_dialogo = 1
 
                 if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
-                    ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
+                    ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1]) 
 
                 delay += relogio.get_time()
                 caixa_insert.desenhar(tela)
                 delay = caixa_insert.desenhar(tela, delay)
+
+            else:
+                npc.atualizar_dialogos(dialogos)
             
-            if npc.indice_dialogo == -2:
-                desafio_aberto = True
-                npc.indice_dialogo = -3
+        if npc.indice_dialogo == -2:
+            desafio_aberto = True
+            npc.indice_dialogo = -3
+
 
         #chamando desfaio
         if desafio_aberto:
             caixa_resposta.atualizar() 
 
             if entradas.clicado(pygame.K_RETURN):
-                if validar_resposta(caixa_resposta.texto,"resposta_correta"):
+                if validar_resposta(caixa_resposta.texto,"teste"):
+                    jogo_encerrado = True
                     objetivo_encontrado = True
                     desafio_aberto = False
                 else:
