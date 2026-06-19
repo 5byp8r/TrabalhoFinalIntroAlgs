@@ -167,7 +167,7 @@ def executar_jogo():
 
     recorde = carregar_recorde(CAMINHO_RECORDE)
 
-    jogo_encerrado = False
+    desafio_finalizado = False
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -231,7 +231,7 @@ def executar_jogo():
 
             if entradas.clicado(pygame.K_RETURN):
                 if validar_resposta(caixa_resposta.texto,"teste"):
-                    jogo_encerrado = True
+                    desafio_finalizado = True
                     objetivo_encontrado = True
                     desafio_aberto = False
                 else:
@@ -269,9 +269,10 @@ def executar_jogo():
             recorde = pontos
             salvar_recorde(CAMINHO_RECORDE, recorde)
 
-        if jogo_encerrado:
+        if desafio_finalizado:
             salvar_ranking(CAMINHO_RANKING, jogador.nome, pontos)
             carregar_ranking(CAMINHO_RANKING)
+            desafio_finalizado = False
 
         frame_atual += 1 
         if frame_atual >= tempo_limite:

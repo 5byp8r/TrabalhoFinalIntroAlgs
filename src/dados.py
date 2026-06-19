@@ -5,7 +5,7 @@ def salvar_recorde(caminho_arquivo, pontuacao):
 
 def salvar_ranking(caminho_arquivo, nome, pontuacao):
     """Faz o ranqueamento da pontuação do jogador"""
-    with open(caminho_arquivo, "w", encoding="utf-8") as arquivo:
+    with open(caminho_arquivo, "a", encoding="utf-8") as arquivo:
         arquivo.write(f'{str(pontuacao)} --- {str(nome)} \n')
 
 def carregar_ranking(caminho_arquivo):
