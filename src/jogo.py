@@ -53,6 +53,8 @@ from src.jogador import Jogador
 
 from src.desafios import Carta, caixaResposta
 
+from src.menu import main_menu
+
 from src.dados import (
     salvar_recorde,
     carregar_recorde,
@@ -69,11 +71,18 @@ tipos_tile = [
 
 mapa = Map(MAPA, tipos_tile, tamanho_tile)
 
+screen = None
+
 def executar_jogo():
     """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
     pygame.init()
     
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
+    screen = tela
+    continuar = main_menu(tela, LARGURA_TELA, ALTURA_TELA)
+    if not continuar:
+        pygame.quit()
+        return
 
     relogio = pygame.time.Clock()
     delay = 0
@@ -171,6 +180,9 @@ def executar_jogo():
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
+
+
+
         relogio.tick(FPS)
 
         entradas.teclas_clicadas.clear()
