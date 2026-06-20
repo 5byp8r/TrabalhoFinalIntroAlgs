@@ -53,7 +53,7 @@ from src.jogador import Jogador
 
 from src.desafios import Carta, caixaResposta
 
-from src.menu import main_menu
+from src.menu import Menu
 
 from src.dados import (
     salvar_recorde,
@@ -79,10 +79,6 @@ def executar_jogo():
     
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
     screen = tela
-    continuar = main_menu(tela, LARGURA_TELA, ALTURA_TELA)
-    if not continuar:
-        pygame.quit()
-        return
 
     relogio = pygame.time.Clock()
     delay = 0
@@ -178,10 +174,11 @@ def executar_jogo():
 
     desafio_finalizado = False
 
+    jogo_iniciado = False
+    menu = Menu(tela, LARGURA_TELA, ALTURA_TELA)
+
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
-
-
 
         relogio.tick(FPS)
 
@@ -200,7 +197,17 @@ def executar_jogo():
                 entradas.deletar_tecla((evento.type - 1) * evento.button)
 
         # Desenhando o mapa na tela quando a camera é 0
-        tela.fill(PRETO)
+        if not jogo_iniciado:
+            menu.mostrar_menu()
+
+            if menu.btn_iniciar.clicado() == "Jogar":
+                jogo_iniciado = True
+
+            if menu.btn_sair.clicado() == "Sair":
+                rodando = False
+
+            continue
+
         mapa.desenhar_mapa(tela)
         jogador.atualizar()
         npc.atualizar()

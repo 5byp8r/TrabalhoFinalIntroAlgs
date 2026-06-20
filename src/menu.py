@@ -1,4 +1,5 @@
 import pygame
+from src import entradas
 
 BRANCO = (255, 255, 255)
 AZUL_TRANSLUCIDO = (0, 80, 200, 180)
@@ -11,67 +12,87 @@ class Button:
         self.text = text
         self.action = action
         self.center_y = center_y
-        self.widht, self.height = 320, 70
-        self.rect = pygame.Rect((0, 0, self.widht, self.height))
+
+        self.width = 320
+        self.height = 70
+
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (largura_tela // 2, center_y)
 
-    def draw(self, win, mouse_pos, fonte_botao):
+    def draw(self, win, fonte_botao):
+        mouse_pos = pygame.mouse.get_pos()
         is_hover = self.rect.collidepoint(mouse_pos)
+
         color = AZUL_HOVER if is_hover else AZUL_TRANSLUCIDO
-        superficie_botao = pygame.Surface((self.widht, self.height), pygame.SRCALPHA)
-        pygame.draw.rect(superficie_botao, color, (0, 0, self.widht, self.height), border_radius=16)
+
+        superficie_botao = pygame.Surface(
+            (self.width, self.height),
+            pygame.SRCALPHA
+        )
+
+        pygame.draw.rect(
+            superficie_botao,
+            color,
+            (0, 0, self.width, self.height),
+            border_radius=16
+        )
+
         win.blit(superficie_botao, self.rect)
 
         text_surf = fonte_botao.render(self.text, True, BRANCO)
         text_rect = text_surf.get_rect(center=self.rect.center)
 
         shadow = fonte_botao.render(self.text, True, SOMBRA)
+
         win.blit(shadow, (text_rect.x + 2, text_rect.y + 2))
         win.blit(text_surf, text_rect)
 
-    def clicado(self, mouse_pos, mouse_pressed):
-        return self.rect.collidepoint(mouse_pos) and mouse_pressed[0]
+    def clicado(self):
+        tecla_mouse = pygame.MOUSEBUTTONDOWN * 1
 
+        if entradas.clicado(tecla_mouse):
+            posicao_clique = entradas.teclas_clicadas[tecla_mouse]
 
-def main_menu(tela, largura_tela, altura_tela):
-    """Mostra o menu e fica nele até o jogador clicar em Jogar ou Sair.
-    Retorna True para seguir pro jogo, False para fechar tudo."""
+            if self.rect.collidepoint(posicao_clique):
+                return self.action
 
-    background = pygame.image.load("assets/imagens/botoes/background.png")
-    background = pygame.transform.scale(background, (largura_tela, altura_tela))
+        return None
 
-    fonte_titulo = pygame.font.SysFont(None, 72)
-    fonte_botao = pygame.font.SysFont(None, 36)
+class Menu:
+    def __init__(self, tela, largura_tela, altura_tela):
+        self.tela = tela
+        self.largura_tela = largura_tela
+        self.altura_tela = altura_tela
 
-    botoes = [
-        Button("Iniciar Jogo", 320, "Jogar", largura_tela),
-        Button("Sair do jogo", 420, "Sair", largura_tela),
-    ]
+        self.background = pygame.image.load("assets/imagens/botoes/background.png")
+        self.background = pygame.transform.scale(self.background, (largura_tela, altura_tela))
 
-    clock = pygame.time.Clock()
+        self.fonte_titulo = pygame.font.SysFont(None, 72)
+        self.fonte_botao = pygame.font.SysFont(None, 36)
 
-    while True:
-        clock.tick(60)
-        tela.blit(background, (0, 0))
+        self.titulo = self.fonte_titulo.render("DRECUT", True, BRANCO)
+        self.shadow = self.fonte_titulo.render("DRECUT", True, SOMBRA)
 
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_pressed = pygame.mouse.get_pressed()
+        # sem vírgula no final -> objetos Button, não tuplas
+        self.btn_iniciar = Button("Iniciar Jogo", 320, "Jogar", largura_tela)
+        self.btn_sair = Button("Sair do jogo", 420, "Sair", largura_tela)
+        self.botoes = [self.btn_iniciar, self.btn_sair]
 
-        titulo = fonte_titulo.render("DRECUT", True, BRANCO)
-        shadow = fonte_titulo.render("DRECUT", True, SOMBRA)
-        tela.blit(shadow, (largura_tela // 2 - titulo.get_width() // 2 + 3, 103))
-        tela.blit(titulo, (largura_tela // 2 - titulo.get_width() // 2, 100))
+    def mostrar_menu(self):
+        """Desenha o menu e retorna a ação do botão clicado neste frame,
+        ou None se nenhum botão foi clicado."""
 
-        for btn in botoes:
-            btn.draw(tela, mouse_pos, fonte_botao)
-            if btn.clicado(mouse_pos, mouse_pressed):
-                if btn.action == "Jogar":
-                    return True
-                elif btn.action == "Sair":
-                    return False
+        self.tela.blit(self.background, (0, 0))
+        self.tela.blit(
+            self.shadow,
+            (self.largura_tela // 2 - self.titulo.get_width() // 2 + 3, 103)
+        )
+        self.tela.blit(
+            self.titulo,
+            (self.largura_tela // 2 - self.titulo.get_width() // 2, 100)
+        )
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
+        for btn in self.botoes:
+            btn.draw(self.tela, self.fonte_botao)
 
         pygame.display.flip()
