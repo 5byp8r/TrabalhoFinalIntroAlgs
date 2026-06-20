@@ -63,8 +63,8 @@ from src.dados import (
 )
 
 tipos_tile = [
-    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
     TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
+    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
     TipoTile("grass", "assets/imagens/Tiles/GK_JC_Free_047.png", False),
     TipoTile("path", "assets/imagens/Tiles/GK_JC_Free_041.png", False)
 ]
@@ -137,8 +137,8 @@ def executar_jogo():
     jogador = Jogador(  LARGURA_TELA // 2, ALTURA_TELA // 2,
                         largura = 50, 
                         altura = 100,
-                        velocidade = 2,
-                        velocidade_corrida = 4,
+                        velocidade = 4,
+                        velocidade_corrida = 10,
                         estado = "idle",
                         velocidade_animacao = velocidade_animacao_jogador,
                         animacoes = animacoes_jogador)
@@ -208,9 +208,10 @@ def executar_jogo():
 
             continue
 
+
         tela.fill(PRETO)
         mapa.desenhar_mapa(tela)
-        jogador.atualizar()
+        jogador.atualizar(mapa)
         npc.atualizar()
 
         jogador.desenhar(tela)

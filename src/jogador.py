@@ -3,14 +3,16 @@ from src.personagem import Personagem, carregar_frames
 from src.camera import camera
 from src.entradas import pressionado
 
+
 class Jogador(Personagem):
     def __init__(self, x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao):
         self.nome = ""
         super().__init__(x, y, largura, altura, velocidade, velocidade_corrida, estado, animacoes, velocidade_animacao)
 
-    def atualizar(self):
+    def atualizar(self, mapa):
         # guarda o estado atual antes de qualquer coisa
         # assim dá pra saber se ele mudou no final
+        posicao_anterior = self.hitbox["rect"].copy()
         self.estado_anterior = self.estado
 
         # se estiver no meio de um ataque ou levando dano, espera terminar
@@ -73,7 +75,22 @@ class Jogador(Personagem):
             self.frame_atual = 0
             self.contador = 0
 
-        # atualiza a câmera para seguir o personagem
+        # se o estado mudou, reseta a animação
+        if self.estado != self.estado_anterior:
+            self.frame_atual = 0
+            self.contador = 0
+
+        # Atualiza hitbox para a nova posição do jogador
+        self.hitbox["rect"].x = self.x
+        self.hitbox["rect"].y = self.y
+
+        # Testa colisão com os tiles 0
+        if mapa.tem_colisao(self.hitbox["rect"]):
+            self.hitbox["rect"] = posicao_anterior
+            self.x = posicao_anterior.x
+            self.y = posicao_anterior.y
+
+        # Câmera segue a posição já corrigida
         camera.x = self.x - camera.width // 2 + 64
         camera.y = self.y - camera.height // 2 + 64
 

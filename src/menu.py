@@ -8,8 +8,8 @@ SOMBRA = (0, 0, 0)
 
 
 class Button:
-    def __init__(self, text, center_y, action, largura_tela):
-        self.text = text
+    def __init__(self, texto, center_y, action, largura_tela):
+        self.texto = texto
         self.action = action
         self.center_y = center_y
 
@@ -19,7 +19,7 @@ class Button:
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (largura_tela // 2, center_y)
 
-    def draw(self, win, fonte_botao):
+    def draw(self, tela, fonte_botao):
         mouse_pos = pygame.mouse.get_pos()
         is_hover = self.rect.collidepoint(mouse_pos)
 
@@ -37,15 +37,15 @@ class Button:
             border_radius=16
         )
 
-        win.blit(superficie_botao, self.rect)
+        tela.blit(superficie_botao, self.rect)
 
-        text_surf = fonte_botao.render(self.text, True, BRANCO)
-        text_rect = text_surf.get_rect(center=self.rect.center)
+        texto_surperficie = fonte_botao.render(self.texto, True, BRANCO)
+        texto_rect = texto_surperficie.get_rect(center=self.rect.center)
 
-        shadow = fonte_botao.render(self.text, True, SOMBRA)
+        shadow = fonte_botao.render(self.texto, True, SOMBRA)
 
-        win.blit(shadow, (text_rect.x + 2, text_rect.y + 2))
-        win.blit(text_surf, text_rect)
+        tela.blit(shadow, (texto_rect.x + 2, texto_rect.y + 2))
+        tela.blit(texto_surperficie, texto_rect)
 
     def clicado(self):
         tecla_mouse = pygame.MOUSEBUTTONDOWN * 1

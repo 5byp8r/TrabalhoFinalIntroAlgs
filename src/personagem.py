@@ -1,4 +1,5 @@
 import pygame
+from src.camera import camera
 
 # recebe o caminho da imagem e a largura de cada frame
 # divide a imagem em pedaços iguais e guarda cada um numa lista
@@ -88,4 +89,10 @@ class Personagem:
         # tela.blit(a, (self.hitbox["rect"].x +37.5, self.hitbox["rect"].y +30))
 
         # desenha o frame na posição do personagem
-        tela.blit(frame, (self.x, self.y))
+        tela.blit(
+        frame,
+        (
+            self.x - camera.x,
+            self.y - camera.y
+        )
+        )
