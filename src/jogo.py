@@ -208,6 +208,7 @@ def executar_jogo():
 
             continue
 
+        tela.fill(PRETO)
         mapa.desenhar_mapa(tela)
         jogador.atualizar()
         npc.atualizar()
