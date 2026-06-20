@@ -26,15 +26,13 @@ from src.config import (
 from src import entradas
 
 from src.funcoes import (
-    calcular_pontos,
-    jogador_perdeu,
     limitar_valor,
     verificar_colisao,
-    tomar_dano,
-    recompensa_pista,
-    recompensa_objetivo,
-    punicao_erro,
-    punicao_tempo,
+    vitimas_perdidas,
+    tempo_jogo,
+    tempo_por_enigma,
+    punicao_tempo_jogo,
+    punicao_tempo_enigma,
     abrir_desafio,
     validar_resposta,
 )
@@ -79,6 +77,7 @@ def executar_jogo():
     
     tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
     screen = tela
+    fonte_timer = pygame.font.Font(None, 36)
 
     relogio = pygame.time.Clock()
     delay = 0
@@ -161,12 +160,18 @@ def executar_jogo():
 
     dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
     
-    pista_encontrada = False
-    objetivo_encontrado = False
-    acao_errada = False
-    tempo_esgotado = False
-    tempo_limite = FPS * 30
+    vitimas = ["vitima_1", "vitima_2", "vitima_3", "vitima_4", "vitima_5", "vitima_6"]
+    vitimas_vivas = len(vitimas)
+    enigma_atual = 0
     frame_atual = 0
+    frame_enigma = 0
+
+    #pista_encontrada = False
+    #objetivo_encontrado = False
+    #acao_errada = False
+    #tempo_esgotado = False
+    #tempo_limite = FPS * 30
+    #frame_atual = 0
 
     desafio_aberto = False
 
@@ -253,11 +258,14 @@ def executar_jogo():
             if entradas.clicado(pygame.K_RETURN):
                 if validar_resposta(caixa_resposta.texto,"teste"):
                     desafio_finalizado = True
-                    objetivo_encontrado = True
+                    enigma_atual += 1
+                    frame_enigma = 0
                     desafio_aberto = False
-                else:
-                    acao_errada = True
-                caixa_resposta.limpar()
+                    caixa_resposta.limpar()
+                    
+                #else:
+                #    acao_errada = True
+                #caixa_resposta.limpar()
 
             if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
                 ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
@@ -272,19 +280,25 @@ def executar_jogo():
             if entradas.clicado(pygame.K_ESCAPE):
                 desafio_aberto = False
 
-        #recompensa por pista coletada (gema) e objetivos
-        if  pista_encontrada:
-            pontos = recompensa_pista(pontos, 10)
+        #sistema de recompensa e punição por tempo
+        frame_atual += 1
+        if desafio_aberto:
+            frame_enigma += 1
 
-        if objetivo_encontrado:
-            pontos = recompensa_objetivo(pontos, 50)
+        if tempo_por_enigma(frame_enigma, FPS, minutos=5):
+            vitimas_vivas = punicao_tempo_enigma(vitimas_vivas)
+            enigma_atual += 1
+            frame_enigma = 0
 
-        #sistema de punição
-        if acao_errada:
-            pontos = punicao_erro(pontos, 20)
+        if tempo_jogo(frame_atual, FPS, minutos=30):
+            pontos = punicao_tempo_jogo(pontos, 30)
+            rodando = False
 
-        if tempo_esgotado:
-            pontos = punicao_tempo(pontos, 30)
+        if vitimas_perdidas(vitimas_vivas):
+            rodando = False
+
+        if enigma_atual >= len(vitimas):
+            rodando = False
 
         if pontos > recorde:
             recorde = pontos
@@ -295,9 +309,24 @@ def executar_jogo():
             carregar_ranking(CAMINHO_RANKING)
             desafio_finalizado = False
 
-        frame_atual += 1 
-        if frame_atual >= tempo_limite:
-            tempo_esgotado = True
+        segundos_totais = max(0, (FPS * 60 * 30 - frame_atual) // FPS)
+        minutos_jogo = segundos_totais // 60
+        segundos_jogo = segundos_totais % 60
+
+        segundos_enigma = max(0, (FPS * 60 * 5 - frame_enigma) // FPS)
+        minutos_enigma = segundos_enigma // 60
+        segundos_enigma_resto = segundos_enigma % 60
+
+        texto_tempo_jogo = fonte_timer.render(
+            f"Tempo total: {minutos_jogo:02d}:{segundos_jogo:02d}", True, BRANCO
+        )
+        texto_tempo_enigma = fonte_timer.render(
+            f"Enigma: {minutos_enigma:02d}:{segundos_enigma_resto:02d}", True, BRANCO
+        )
+
+        tela.blit(texto_tempo_jogo, (10, 10))
+        if desafio_aberto:
+            tela.blit(texto_tempo_enigma, (10, 50))
         pygame.display.flip()
 
     pygame.quit()
