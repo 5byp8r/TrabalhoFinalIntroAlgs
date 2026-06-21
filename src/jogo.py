@@ -30,9 +30,8 @@ from src.funcoes import (
     verificar_colisao,
     vitimas_perdidas,
     tempo_jogo,
-    tempo_por_enigma,
+    quantidade_vitimas,
     punicao_tempo_jogo,
-    punicao_tempo_enigma,
     abrir_desafio,
     validar_resposta,
 )
@@ -162,16 +161,7 @@ def executar_jogo():
     
     vitimas = ["vitima_1", "vitima_2", "vitima_3", "vitima_4", "vitima_5", "vitima_6"]
     vitimas_vivas = len(vitimas)
-    enigma_atual = 0
-    frame_atual = 0
-    frame_enigma = 0
-
-    #pista_encontrada = False
-    #objetivo_encontrado = False
-    #acao_errada = False
-    #tempo_esgotado = False
-    #tempo_limite = FPS * 30
-    #frame_atual = 0
+    vitimas_perdidas_quantidade = 0
 
     desafio_aberto = False
 
@@ -258,11 +248,9 @@ def executar_jogo():
             if entradas.clicado(pygame.K_RETURN):
                 if validar_resposta(caixa_resposta.texto,"teste"):
                     desafio_finalizado = True
-                    enigma_atual += 1
-                    frame_enigma = 0
                     desafio_aberto = False
                     caixa_resposta.limpar()
-                    
+
                 #else:
                 #    acao_errada = True
                 #caixa_resposta.limpar()
@@ -280,24 +268,18 @@ def executar_jogo():
             if entradas.clicado(pygame.K_ESCAPE):
                 desafio_aberto = False
 
-        #sistema de recompensa e punição por tempo
-        frame_atual += 1
-        if desafio_aberto:
-            frame_enigma += 1
+        #sistema de recompensa e punição por tempo com sistema de relogio do pygame
+        ticks_atual = pygame.time.get_ticks()
+        
+        if quantidade_vitimas(ticks_atual, vitimas_perdidas_quantidade, minutos=5):
+            vitimas_vivas -= 1
+            vitimas_perdidas_quantidade += 1
 
-        if tempo_por_enigma(frame_enigma, FPS, minutos=5):
-            vitimas_vivas = punicao_tempo_enigma(vitimas_vivas)
-            enigma_atual += 1
-            frame_enigma = 0
-
-        if tempo_jogo(frame_atual, FPS, minutos=30):
+        if tempo_jogo(ticks_atual, minutos=30):
             pontos = punicao_tempo_jogo(pontos, 30)
             rodando = False
 
         if vitimas_perdidas(vitimas_vivas):
-            rodando = False
-
-        if enigma_atual >= len(vitimas):
             rodando = False
 
         if pontos > recorde:
@@ -309,24 +291,19 @@ def executar_jogo():
             carregar_ranking(CAMINHO_RANKING)
             desafio_finalizado = False
 
-        segundos_totais = max(0, (FPS * 60 * 30 - frame_atual) // FPS)
+        segundos_totais = max(0, (30 * 60 * 1000 - ticks_atual) // 1000)
         minutos_jogo = segundos_totais // 60
         segundos_jogo = segundos_totais % 60
-
-        segundos_enigma = max(0, (FPS * 60 * 5 - frame_enigma) // FPS)
-        minutos_enigma = segundos_enigma // 60
-        segundos_enigma_resto = segundos_enigma % 60
 
         texto_tempo_jogo = fonte_timer.render(
             f"Tempo total: {minutos_jogo:02d}:{segundos_jogo:02d}", True, BRANCO
         )
-        texto_tempo_enigma = fonte_timer.render(
-            f"Enigma: {minutos_enigma:02d}:{segundos_enigma_resto:02d}", True, BRANCO
+        texto_vitimas = fonte_timer.render(
+            f"Vitimas Vivas: {vitimas_vivas}/{len(vitimas)}", True, BRANCO
         )
 
         tela.blit(texto_tempo_jogo, (10, 10))
-        if desafio_aberto:
-            tela.blit(texto_tempo_enigma, (10, 50))
+        tela.blit(texto_vitimas, (10, 50))
         pygame.display.flip()
 
     pygame.quit()
