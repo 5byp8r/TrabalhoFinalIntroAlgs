@@ -2,7 +2,7 @@
 
 Um detetive procura pistas para resolver mistérios e encontrar um assassino.
 
-## 1. Drakut: Fragmentos da verdade
+## 1. Nome provisório do jogo
 
 Drecut: Fragmentos da Verdade 
 
@@ -10,10 +10,10 @@ Drecut: Fragmentos da Verdade
 
 Liste os integrantes do grupo.
 
-- Nome 1: João Pedro Silva Dantas
-- Nome 2: Vinícius Marx Galvão
-- Nome 3: Davi Emanuel Moreira Sollar
-- Nome 4: Pedro Henrique Silva Oliveira
+- Nome 1: Davi Emanuel Moreira Sollar
+- Nome 2: João Pedro Silva Dantas
+- Nome 3: Pedro Henrique Silva Oliveira
+- Nome 4: Vinícius Marx Galvão
 
 ## 3. Tipo de jogo
 
@@ -96,10 +96,10 @@ Informe os comandos que serão utilizados pelo jogador.
 
 Controles do grupo:
 
-- Seta para cima: mover para cima
-- Seta para baixo: mover para baixo
-- Seta para esquerda: mover para esquerda
-- Seta para direita: mover para direita
+- W e Seta para cima: mover para cima
+- S e Seta para baixo: mover para baixo
+- A e Seta para esquerda: mover para esquerda
+- D e Seta para direita: mover para direita
 - Espaço: realizar ação
 - ESC: sair do jogo
 

@@ -1,6 +1,6 @@
 ﻿# Testes
 
-Esta pasta contem os testes automatizados do projeto, feitos com `pytest`.
+Esta pasta contém testes automatizados do projeto.
 
 Os testes verificam as regras principais do jogo sem depender do loop completo do Pygame. Isso deixa a validacao mais rapida e mais confiavel, porque cada arquivo testa uma parte pequena do sistema.
 
@@ -86,17 +86,6 @@ Cobre:
 
 Esses testes usam `tmp_path`, que cria arquivos temporarios sem alterar os arquivos reais da pasta `data/`.
 
-### `test_entradas.py`
-
-Testa o modulo `src/entradas.py`, responsavel por registrar teclas e cliques.
-
-Cobre:
-
-- `adicionar_tecla`: registra tecla pressionada e clicada;
-- `deletar_tecla`: remove a tecla das pressionadas;
-- `pressionado`: retorna `True` ou `False` corretamente;
-- `clicado`: retorna `True` ou `False` corretamente.
-
 ### `test_map.py`
 
 Testa a colisao do mapa em `src/map.py`.
@@ -137,17 +126,6 @@ Cobre:
 
 Os testes usam um `MapaFake`, permitindo testar o jogador sem carregar o mapa completo.
 
-### `test_npc.py`
-
-Testa a classe `NPC`, em `src/npc.py`.
-
-Cobre:
-
-- NPC inicia com indice de dialogo `-1`;
-- tecla espaco avanca o dialogo;
-- ao passar do ultimo dialogo, o indice vira `-2`;
-- dialogo finalizado nao avanca novamente.
-
 ### `test_desafios.py`
 
 Testa componentes de desafio em `src/desafios.py`.
@@ -163,25 +141,6 @@ Cobre:
 
 Alguns testes usam `monkeypatch` para substituir carregamento de imagens e evitar depender diretamente dos arquivos graficos.
 
-### `test_botao.py`
-
-Testa a classe `Botao`, em `src/botao.py`.
-
-Cobre:
-
-- clique dentro do botao retorna a acao configurada;
-- clique fora do botao retorna `None`.
-
-### `test_camera.py`
-
-Testa `src/camera.py`.
-
-Cobre:
-
-- `criar_display` retorna o display criado;
-- largura e altura da camera sao configuradas corretamente.
-
-O teste usa `monkeypatch` para evitar abrir uma janela real durante o `pytest`.
 
 ## Tecnicas usadas
 
@@ -205,3 +164,13 @@ O teste usa `monkeypatch` para evitar abrir uma janela real durante o `pytest`.
 - Criar testes de integracao para `Jogo.atualizar` usando mocks/fakes.
 - Criar testes adicionais para o menu inicial.
 - Rodar `python -m pytest` antes de cada entrega.
+## Escopo atual
+
+Os testes atuais cobrem apenas regras isoladas que não dependem de Pygame aberto. Funcionalidades visuais, loop principal, colisões reais no mapa, diálogos e desafios ainda não possuem testes automatizados.
+
+## Próximos testes úteis
+
+- Validação de respostas dos desafios.
+- Punição por tempo de enigma.
+- Punição por tempo total de jogo.
+- Leitura e escrita de recorde/ranking em arquivos temporários.
