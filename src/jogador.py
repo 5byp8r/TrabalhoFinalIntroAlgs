@@ -12,7 +12,9 @@ class Jogador(Personagem):
     def atualizar(self, mapa):
         # guarda o estado atual antes de qualquer coisa
         # assim dá pra saber se ele mudou no final
-        posicao_anterior = self.hitbox["rect"].copy()
+        posicao_anterior_x = self.x
+        posicao_anterior_y = self.y
+
         self.estado_anterior = self.estado
 
         # se estiver no meio de um ataque ou levando dano, espera terminar
@@ -74,21 +76,18 @@ class Jogador(Personagem):
         if self.estado != self.estado_anterior:
             self.frame_atual = 0
             self.contador = 0
-
-        # se o estado mudou, reseta a animação
-        if self.estado != self.estado_anterior:
-            self.frame_atual = 0
-            self.contador = 0
-
+            
         # Atualiza hitbox para a nova posição do jogador
-        self.hitbox["rect"].x = self.x
-        self.hitbox["rect"].y = self.y
+        self.hitbox["rect"].x = self.x + self.diferenca_hitbox_x
+        self.hitbox["rect"].y = self.y + self.diferenca_hitbox_y
 
         # Testa colisão com os tiles 0
         if mapa.tem_colisao(self.hitbox["rect"]):
-            self.hitbox["rect"] = posicao_anterior
-            self.x = posicao_anterior.x
-            self.y = posicao_anterior.y
+            self.x = posicao_anterior_x
+            self.y = posicao_anterior_y
+
+            self.hitbox["rect"].x = self.x + self.diferenca_hitbox_x
+            self.hitbox["rect"].y = self.y + self.diferenca_hitbox_y
 
         # Câmera segue a posição já corrigida
         camera.x = self.x - camera.width // 2 + 64

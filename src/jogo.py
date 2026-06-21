@@ -125,8 +125,8 @@ class Jogo:
         }
 
         self.jogador = Jogador(LARGURA_DISPLAY // 2, ALTURA_DISPLAY // 2,
-                            largura = 50, 
-                            altura = 100,
+                            largura = 32, 
+                            altura = 64,
                             velocidade = 4,
                             velocidade_corrida = 10,
                             estado = "idle",
