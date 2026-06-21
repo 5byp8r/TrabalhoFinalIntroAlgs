@@ -13,12 +13,12 @@ class Map:
         self.tiles = MAPA
         self.tamanho_tile = tamanho_tile
 
-    def desenhar_mapa(self, tela):
+    def desenhar_mapa(self, display):
         for y, linha in enumerate(self.tiles): #Passa um tupla de valores que serão usados, (index, linha)
             for x, tile in enumerate(linha):
                 local = (x * self.tamanho_tile - camera.x , y * self.tamanho_tile - camera.y )
                 image = self.tipos_tile[tile].image
-                tela.blit(image , local)
+                display.blit(image , local)
 
     def tem_colisao(self, rect_jogador):
         for y, linha in enumerate(self.tiles):

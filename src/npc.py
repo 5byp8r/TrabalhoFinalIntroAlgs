@@ -30,5 +30,5 @@ class NPC(Personagem):
             self.indice_dialogo+=1
             if self.indice_dialogo >= len(dialogos._textos[self.nome + "_pista"]): self.indice_dialogo = -2 # se os diálogos chegaram ao final, atualiza com -2
 
-    def desenhar_dialogos(self, tela, dialogos: Texto): 
-        dialogos.desenhar(tela, self.nome + "_pista", self.indice_dialogo)  # desenha os dialogos
+    def desenhar_dialogos(self, display, dialogos: Texto): 
+        dialogos.desenhar(display, self.nome + "_pista", self.indice_dialogo)  # desenha os dialogos
