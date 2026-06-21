@@ -7,8 +7,8 @@ from src.map import (
 )
 
 from src.config import (
-    LARGURA_TELA,
-    ALTURA_TELA,
+    LARGURA_DISPLAY,
+    ALTURA_DISPLAY,
     FPS,
     TITULO_JOGO,
     PRETO,
@@ -17,7 +17,7 @@ from src.config import (
     BORDER,
     CINZA,
     BRANCO,
-    tamanho_tile,
+    TAMANHO_TILE,
     CAMINHO_RECORDE,
     CAMINHO_SPRITES,
     CAMINHO_RANKING
@@ -40,7 +40,7 @@ from src.npc import NPC
 
 from src.camera import (
     camera,
-    criar_tela
+    criar_display
 )    
 
 from src.personagem import carregar_frames
@@ -48,9 +48,7 @@ from src.texto import Texto, texto_desafio
 
 from src.jogador import Jogador
 
-from src.desafios import Carta, caixaResposta
-
-from src.menu import Menu
+from src.desafios import Carta, caixaTexto
 
 from src.dados import (
     salvar_recorde,
@@ -59,89 +57,83 @@ from src.dados import (
     carregar_ranking
 )
 
-tipos_tile = [
-    TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
-    TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
-    TipoTile("grass", "assets/imagens/Tiles/GK_JC_Free_047.png", False),
-    TipoTile("path", "assets/imagens/Tiles/GK_JC_Free_041.png", False)
-]
+from src.executar_jogo import exitGame
 
-mapa = Map(MAPA, tipos_tile, tamanho_tile)
+class Jogo:
+    # Instancia variáveis do jogo
+    def __init__(self, display):
+        self.display = display
+        self.relogio = pygame.time.Clock()
 
-screen = None
+        tipos_tile = [
+            TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
+            TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
+            TipoTile("grass", "assets/imagens/Tiles/GK_JC_Free_047.png", False),
+            TipoTile("path", "assets/imagens/Tiles/GK_JC_Free_041.png", False)
+        ]
 
-def executar_jogo():
-    """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
-    pygame.init()
-    
-    tela = criar_tela(ALTURA_TELA, LARGURA_TELA, TITULO_JOGO)
-    screen = tela
-    fonte_timer = pygame.font.Font(None, 36)
+        self.mapa = Map(MAPA, tipos_tile, TAMANHO_TILE)
 
-    relogio = pygame.time.Clock()
-    delay = 0
-    rodando = True
+        # carrega todas as animações do jogador
+        # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
+        animacoes_jogador = {
+            "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
+            "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
+            "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
+            "run":     carregar_frames("assets/imagens/personagem_principal/Run.png"),
+            "jump":    carregar_frames("assets/imagens/personagem_principal/Jump.png"),
+            "attack1": carregar_frames("assets/imagens/personagem_principal/Attack_1.png"),
+            "attack2": carregar_frames("assets/imagens/personagem_principal/Attack_2.png"),
+            "attack3": carregar_frames("assets/imagens/personagem_principal/Attack_3.png"),
+            "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
+            "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
+        }
 
-    # carrega todas as animações do jogador
-    # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
-    animacoes_jogador = {
-        "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
-        "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
-        "walk":    carregar_frames("assets/imagens/personagem_principal/Walk.png"),
-        "run":     carregar_frames("assets/imagens/personagem_principal/Run.png"),
-        "jump":    carregar_frames("assets/imagens/personagem_principal/Jump.png"),
-        "attack1": carregar_frames("assets/imagens/personagem_principal/Attack_1.png"),
-        "attack2": carregar_frames("assets/imagens/personagem_principal/Attack_2.png"),
-        "attack3": carregar_frames("assets/imagens/personagem_principal/Attack_3.png"),
-        "hurt":    carregar_frames("assets/imagens/personagem_principal/Hurt.png"),
-        "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
-    }
+        # carrega todas as animações do npc
+        animacoes_npc = {
+            "idle":    carregar_frames("assets/imagens/npc_1/Idle.png"),
+            "walk":    carregar_frames("assets/imagens/npc_1/Walk.png"),
+            "run":     carregar_frames("assets/imagens/npc_1/Run.png"),
+            "attack":  carregar_frames("assets/imagens/npc_1/Attack.png"),
+            "hurt":    carregar_frames("assets/imagens/npc_1/Hurt.png"),
+            "dead":    carregar_frames("assets/imagens/npc_1/Dead.png"),
+        }
 
-    # carrega todas as animações do npc
-    animacoes_npc = {
-        "idle":    carregar_frames("assets/imagens/npc_1/Idle.png"),
-        "walk":    carregar_frames("assets/imagens/npc_1/Walk.png"),
-        "run":     carregar_frames("assets/imagens/npc_1/Run.png"),
-        "attack":  carregar_frames("assets/imagens/npc_1/Attack.png"),
-        "hurt":    carregar_frames("assets/imagens/npc_1/Hurt.png"),
-        "dead":    carregar_frames("assets/imagens/npc_1/Dead.png"),
-    }
+        # velocidade de cada animação do jogador separadamente
+        # quanto menor o número, mais rápido troca os frames
+        velocidade_animacao_jogador = {
+            "idle":    10,
+            "idle2":   10,
+            "walk":    5,
+            "run":     5,
+            "jump":    8,
+            "attack1": 4,  # ataques são mais rápidos
+            "attack2": 4,
+            "attack3": 4,
+            "hurt":    5,
+            "dead":    8,
+        }
 
-    # velocidade de cada animação do jogador separadamente
-    # quanto menor o número, mais rápido troca os frames
-    velocidade_animacao_jogador = {
-        "idle":    10,
-        "idle2":   10,
-        "walk":    5,
-        "run":     5,
-        "jump":    8,
-        "attack1": 4,  # ataques são mais rápidos
-        "attack2": 4,
-        "attack3": 4,
-        "hurt":    5,
-        "dead":    8,
-    }
+        # velocidade de cada animação do npc separadamente
+        velocidade_animacao_npc = {
+            "idle":    10,
+            "walk":    10,
+            "run":     7,
+            "attack":  4,  # ataques são mais rápidos
+            "hurt":    5,
+            "dead":    8,
+        }
 
-    # velocidade de cada animação do npc separadamente
-    velocidade_animacao_npc = {
-        "idle":    10,
-        "walk":    10,
-        "run":     7,
-        "attack":  4,  # ataques são mais rápidos
-        "hurt":    5,
-        "dead":    8,
-    }
+        self.jogador = Jogador(LARGURA_DISPLAY // 2, ALTURA_DISPLAY // 2,
+                            largura = 50, 
+                            altura = 100,
+                            velocidade = 4,
+                            velocidade_corrida = 10,
+                            estado = "idle",
+                            velocidade_animacao = velocidade_animacao_jogador,
+                            animacoes = animacoes_jogador)
 
-    jogador = Jogador(  LARGURA_TELA // 2, ALTURA_TELA // 2,
-                        largura = 50, 
-                        altura = 100,
-                        velocidade = 4,
-                        velocidade_corrida = 10,
-                        estado = "idle",
-                        velocidade_animacao = velocidade_animacao_jogador,
-                        animacoes = animacoes_jogador)
-
-    npc = NPC(          "john", LARGURA_TELA // 2, ALTURA_TELA // 2 - 100,
+        self.npc = NPC("john", LARGURA_DISPLAY // 2, ALTURA_DISPLAY // 2 - 100,
                         largura = 50, 
                         altura = 100,
                         velocidade = 0,
@@ -150,160 +142,138 @@ def executar_jogo():
                         velocidade_animacao = velocidade_animacao_npc,
                         animacoes = animacoes_npc)
 
-    pontos = 0
+        self.pontos = 0
+        self.delay = 0
+        self.fonte_timer = pygame.font.Font(None, 36)
 
-    carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
-    caixa_resposta = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 50 , 300, 40)
-    caixa_insert = caixaResposta(LARGURA_TELA // 2 ,ALTURA_TELA - 50 , 300, 40)
-    caixa_insert.texto = "Nome"
+        self.carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
+        self.caixa_resposta = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
+        self.caixa_insert = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
+        self.caixa_insert.texto = "Nome"
+        self.dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_DISPLAY-100, LARGURA_DISPLAY, 100)) 
+        self.vitimas = ["vitima_1", "vitima_2", "vitima_3", "vitima_4", "vitima_5", "vitima_6"]
+        self.vitimas_vivas = len(self.vitimas)
+        self.vitimas_perdidas_quantidade = 0
+        self.desafio_aberto = False
+        self.recorde = carregar_recorde(CAMINHO_RECORDE)
+        self.desafio_finalizado = False
+        self.jogo_iniciado = False
+        self.desenhar_caixa_insert = False
+        self.desenhar_carta = False
 
-    dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_TELA-100, LARGURA_TELA, 100)) 
-    
-    vitimas = ["vitima_1", "vitima_2", "vitima_3", "vitima_4", "vitima_5", "vitima_6"]
-    vitimas_vivas = len(vitimas)
-    vitimas_perdidas_quantidade = 0
+    # Atualiza estado, colisões e pontuação do jogo
+    def atualizar(self):
+        self.relogio.tick(FPS)
+        self.jogador.atualizar(self.mapa)
+        self.npc.atualizar()
 
-    desafio_aberto = False
+        if verificar_colisao(self.jogador.hitbox["rect"], self.npc.hitbox["rect"]):
 
-    recorde = carregar_recorde(CAMINHO_RECORDE)
-
-    desafio_finalizado = False
-
-    jogo_iniciado = False
-    menu = Menu(tela, LARGURA_TELA, ALTURA_TELA)
-
-    # Loop principal: processa entrada, atualiza estado e renderiza a cena.
-    while rodando:
-
-        relogio.tick(FPS)
-
-        entradas.teclas_clicadas.clear()
-
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                rodando = False
-            if evento.type == pygame.KEYDOWN:
-                entradas.adicionar_tecla(evento.key, evento.unicode)
-            if evento.type == pygame.KEYUP:
-                entradas.deletar_tecla(evento.key)
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-                entradas.adicionar_tecla(evento.type * evento.button, evento.pos)
-            if evento.type == pygame.MOUSEBUTTONUP:
-                entradas.deletar_tecla((evento.type - 1) * evento.button)
-
-        # Desenhando o mapa na tela quando a camera é 0
-        if not jogo_iniciado:
-            menu.mostrar_menu()
-
-            if menu.btn_iniciar.clicado() == "Jogar":
-                jogo_iniciado = True
-
-            if menu.btn_sair.clicado() == "Sair":
-                rodando = False
-
-            continue
-
-
-        tela.fill(PRETO)
-        mapa.desenhar_mapa(tela)
-        jogador.atualizar(mapa)
-        npc.atualizar()
-
-        jogador.desenhar(tela)
-        npc.desenhar(tela)
-        npc.desenhar_dialogos(tela, dialogos)
-
-        if verificar_colisao(jogador.hitbox["rect"], npc.hitbox["rect"]):
-
-            if npc.indice_dialogo == 1:
-                caixa_insert.atualizar()
+            if self.npc.indice_dialogo == 1:
+                self.caixa_insert.atualizar()
 
                 if entradas.clicado(pygame.K_RETURN):
-                    jogador.nome = caixa_insert.texto
-                    if not validar_resposta(jogador.nome, "Nome"):
-                        npc.indice_dialogo += 1
+                    self.jogador.nome = self.caixa_insert.texto
+                    if not validar_resposta(self.jogador.nome, "Nome"):
+                        self.npc.indice_dialogo += 1
 
                 if entradas.clicado(pygame.K_SPACE):
-                    npc.indice_dialogo = 1
+                    self.npc.indice_dialogo = 1
 
                 if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
-                    ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1]) 
+                    ativo = self.caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1]) 
 
-                delay += relogio.get_time()
-                caixa_insert.desenhar(tela)
-                delay = caixa_insert.desenhar(tela, delay)
+                self.desenhar_caixa_insert = True
 
             else:
-                npc.atualizar_dialogos(dialogos)
+                self.desenhar_caixa_insert = False
+                self.npc.atualizar_dialogos(self.dialogos)
             
-        if npc.indice_dialogo == -2:
-            desafio_aberto = True
-            npc.indice_dialogo = -3
-
+        if self.npc.indice_dialogo == -2:
+            self.desafio_aberto = True
+            self.npc.indice_dialogo = -3
 
         #chamando desfaio
-        if desafio_aberto:
-            caixa_resposta.atualizar() 
+        if self.desafio_aberto:
+            self.caixa_resposta.atualizar() 
 
             if entradas.clicado(pygame.K_RETURN):
-                if validar_resposta(caixa_resposta.texto,"teste"):
-                    desafio_finalizado = True
-                    desafio_aberto = False
-                    caixa_resposta.limpar()
 
-                #else:
-                #    acao_errada = True
-                #caixa_resposta.limpar()
-
+                if validar_resposta(self.caixa_resposta.texto,"teste"):
+                    self.desafio_finalizado = True
+                    self.desafio_aberto = False
+                    self.caixa_resposta.limpar()
+                
             if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
-                ativo = caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
+                ativo = self.caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
+                if not ativo: self.carta.virar()
 
-                if not ativo: carta.virar()
-
-            delay += relogio.get_time()
             # Desenha a Carta
-            carta.desenhar(tela)
-            delay = caixa_resposta.desenhar(tela, delay)
+            self.desenhar_carta = True
 
             if entradas.clicado(pygame.K_ESCAPE):
-                desafio_aberto = False
+                self.desafio_aberto = False
+        
+        else:
+            self.desenhar_carta = False
+
 
         #sistema de recompensa e punição por tempo com sistema de relogio do pygame
         ticks_atual = pygame.time.get_ticks()
         
-        if quantidade_vitimas(ticks_atual, vitimas_perdidas_quantidade, minutos=5):
-            vitimas_vivas -= 1
-            vitimas_perdidas_quantidade += 1
+        if quantidade_vitimas(ticks_atual, self.vitimas_perdidas_quantidade, minutos=5):
+            self.vitimas_vivas -= 1
+            self.vitimas_perdidas_quantidade += 1
 
         if tempo_jogo(ticks_atual, minutos=30):
-            pontos = punicao_tempo_jogo(pontos, 30)
-            rodando = False
+            self.pontos = punicao_tempo_jogo(self.pontos, 30)
+            exitGame()
+            return False
+        
+        if vitimas_perdidas(self.vitimas_vivas):
+            exitGame()
+            return False
 
-        if vitimas_perdidas(vitimas_vivas):
-            rodando = False
+        if self.pontos > self.recorde:
+            self.recorde = self.pontos
+            salvar_recorde(CAMINHO_RECORDE, self.recorde)
 
-        if pontos > recorde:
-            recorde = pontos
-            salvar_recorde(CAMINHO_RECORDE, recorde)
-
-        if desafio_finalizado:
-            salvar_ranking(CAMINHO_RANKING, jogador.nome, pontos)
+        if self.desafio_finalizado:
+            salvar_ranking(CAMINHO_RANKING, self.jogador.nome, self.pontos)
             carregar_ranking(CAMINHO_RANKING)
-            desafio_finalizado = False
+            self.desafio_finalizado = False
 
         segundos_totais = max(0, (30 * 60 * 1000 - ticks_atual) // 1000)
-        minutos_jogo = segundos_totais // 60
-        segundos_jogo = segundos_totais % 60
+        self.minutos_jogo = segundos_totais // 60
+        self.segundos_jogo = segundos_totais % 60
 
-        texto_tempo_jogo = fonte_timer.render(
-            f"Tempo total: {minutos_jogo:02d}:{segundos_jogo:02d}", True, BRANCO
+        return True
+    
+    def desenhar(self):
+        self.display.fill(PRETO)
+        self.mapa.desenhar_mapa(self.display)
+
+        self.jogador.desenhar(self.display)
+        self.npc.desenhar(self.display)
+        self.npc.desenhar_dialogos(self.display, self.dialogos)
+
+        if self.desenhar_caixa_insert:
+            self.delay += self.relogio.get_time()
+            self.delay = self.caixa_insert.desenhar(self.display, self.delay)
+
+        if self.desenhar_carta:
+            self.carta.desenhar(self.display)
+            self.delay += self.relogio.get_time()
+            self.delay = self.caixa_resposta.desenhar(self.display, self.delay)
+
+
+        texto_tempo_jogo = self.fonte_timer.render(
+            f"Tempo total: {self.minutos_jogo:02d}:{self.segundos_jogo:02d}", True, BRANCO
         )
-        texto_vitimas = fonte_timer.render(
-            f"Vitimas Vivas: {vitimas_vivas}/{len(vitimas)}", True, BRANCO
+        texto_vitimas = self.fonte_timer.render(
+            f"Vitimas Vivas: {self.vitimas_vivas}/{len(self.vitimas)}", True, BRANCO
         )
 
-        tela.blit(texto_tempo_jogo, (10, 10))
-        tela.blit(texto_vitimas, (10, 50))
+        self.display.blit(texto_tempo_jogo, (10, 10))
+        self.display.blit(texto_vitimas, (10, 50))
         pygame.display.flip()
-
-    pygame.quit()

@@ -2,8 +2,8 @@ import pygame
 
 from src import entradas
 from src.config import (
-    ALTURA_TELA,
-    LARGURA_TELA,
+    ALTURA_DISPLAY,
+    LARGURA_DISPLAY,
     BRANCO,
     CINZA,
     PRETO
@@ -16,19 +16,19 @@ class Carta:
         img_frente = pygame.image.load(img_frente).convert_alpha()
         img_verso = pygame.image.load(img_verso).convert_alpha()
 
-        self.frente_image = pygame.transform.scale(img_frente,(LARGURA_TELA,ALTURA_TELA)) 
-        self.verso_image = pygame.transform.scale(img_verso,(LARGURA_TELA,ALTURA_TELA)) 
+        self.frente_image = pygame.transform.scale(img_frente,(LARGURA_DISPLAY,ALTURA_DISPLAY)) 
+        self.verso_image = pygame.transform.scale(img_verso,(LARGURA_DISPLAY,ALTURA_DISPLAY)) 
 
         self.x = x
         self.y = y
 
         self.mostra_frente = True
 
-    def desenhar(self, tela):
+    def desenhar(self, display):
         if self.mostra_frente:
-            tela.blit(self.frente_image, (self.x, self.y))
+            display.blit(self.frente_image, (self.x, self.y))
         else:
-            tela.blit(self.verso_image, (self.x, self.y))
+            display.blit(self.verso_image, (self.x, self.y))
 
     def virar(self):
         self.mostra_frente = not self.mostra_frente
@@ -37,7 +37,7 @@ class Carta:
 
 
 
-class caixaResposta:
+class caixaTexto:
     def __init__(self, x, y, largura=300, altura=40):
 
         self.texto = "decifre"
@@ -61,21 +61,21 @@ class caixaResposta:
                 for string in entradas.teclas_clicadas.values():
                     if isinstance(string, str): self.texto += string
 
-    def desenhar(self, tela, delay = 0):
+    def desenhar(self, display, delay = 0):
         surface_fundo = pygame.Surface((self.caixa.width, self.caixa.height))
         surface_fundo.set_alpha(180)        
         surface_fundo.fill(BRANCO)
-        tela.blit(surface_fundo, (self.caixa.x, self.caixa.y))
+        display.blit(surface_fundo, (self.caixa.x, self.caixa.y))
 
         if delay >= 500:
             self.final = "|" if self.final == "" and self.ativo else ""
             delay = 0
 
         cor_borda = BRANCO if self.ativo else CINZA
-        pygame.draw.rect(tela, cor_borda, self.caixa, 2)  # borda
+        pygame.draw.rect(display, cor_borda, self.caixa, 2)  # borda
 
         superficie = self.fonte.render(self.texto + self.final, True, PRETO)
-        tela.blit(superficie, (self.caixa.x + 8, self.caixa.y + 8))
+        display.blit(superficie, (self.caixa.x + 8, self.caixa.y + 8))
 
         return delay
 

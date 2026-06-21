@@ -74,7 +74,7 @@ class Personagem:
             # o % faz o frame voltar pra 0 depois do último, criando o loop da animação
             self.frame_atual = (self.frame_atual + 1) % len(self.animacoes[self.estado])
 
-    def desenhar(self, tela):
+    def desenhar(self, display):
         # pega o frame atual da animação do estado correto
         frame = self.animacoes[self.estado][self.frame_atual]
 
@@ -86,10 +86,10 @@ class Personagem:
         # teste de hitbox
         # a = pygame.Surface(self.hitbox["rect"].size, pygame.SRCALPHA)
         # a.fill((255,255,255,127))
-        # tela.blit(a, (self.hitbox["rect"].x +37.5, self.hitbox["rect"].y +30))
+        # display.blit(a, (self.hitbox["rect"].x +37.5, self.hitbox["rect"].y +30))
 
         # desenha o frame na posição do personagem
-        tela.blit(
+        display.blit(
         frame,
         (
             self.x - camera.x,

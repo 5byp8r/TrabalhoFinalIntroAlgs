@@ -7,7 +7,8 @@ def adicionar_tecla(tecla, adicional = None):
     teclas_clicadas[tecla] = adicional
 
 def deletar_tecla(tecla):
-    del teclas_pressionadas[tecla]
+    if tecla in teclas_pressionadas.keys():
+        del teclas_pressionadas[tecla]
 
 def pressionado(tecla):
     return tecla in teclas_pressionadas.keys()

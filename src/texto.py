@@ -1,8 +1,8 @@
 import json
 import pygame
 from src.config import (
-    LARGURA_TELA,
-    ALTURA_TELA,
+    LARGURA_DISPLAY,
+    ALTURA_DISPLAY,
     PRETO,
     CINZA,
 )
@@ -20,20 +20,20 @@ class Texto:
         self._fundo = fundo
         self._cor_fundo = cor_fundo
 
-    def desenhar(self, tela:pygame.Surface, bloco, indice):
+    def desenhar(self, display:pygame.Surface, bloco, indice):
         if indice >= 0:
             texto = self._fonte.render(self._textos[bloco][indice], True, self._cor)
 
             # se não existe fundo, deseha o texto na posição centro baixo
             if self._fundo == None:
-                posicao = texto.get_rect(centerx=LARGURA_TELA / 2, y=ALTURA_TELA-texto.get_height()-21)
+                posicao = texto.get_rect(centerx=LARGURA_DISPLAY / 2, y=ALTURA_DISPLAY-texto.get_height()-21)
             else:
                 posicao = texto.get_rect(x=self._fundo.x + 10, centery=self._fundo.centery)
                 superficie = pygame.Surface(self._fundo.size, pygame.SRCALPHA)
                 superficie.fill(self._cor_fundo)
-                tela.blit(superficie, self._fundo.topleft)
+                display.blit(superficie, self._fundo.topleft)
 
-            tela.blit(texto, posicao)
+            display.blit(texto, posicao)
 
 def texto_desafio():
     fonte = pygame.font.Font(None, 36)
