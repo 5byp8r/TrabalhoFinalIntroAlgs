@@ -24,7 +24,16 @@ class Personagem:
         # posição inicial do personagem na tela
         self.x = x
         self.y = y
-        self.hitbox = {"rect": pygame.Rect(x, y, largura, altura)} 
+
+        self.diferenca_hitbox_x = (128 - largura) // 2
+        self.diferenca_hitbox_y = 128 - altura
+
+        self.hitbox = {"rect": pygame.Rect(
+            self.x + self.diferenca_hitbox_x,
+            self.y + self.diferenca_hitbox_y,
+            largura,
+            altura
+        )}
 
         # velocidade normal e velocidade ao segurar shift
         self.velocidade = velocidade
@@ -59,8 +68,8 @@ class Personagem:
             self.frame_atual = 0
             self.contador = 0
         
-        self.hitbox["rect"].x = self.x
-        self.hitbox["rect"].y = self.y
+        self.hitbox["rect"].x = self.x + self.diferenca_hitbox_x
+        self.hitbox["rect"].y = self.y + self.diferenca_hitbox_y
 
         self.avancar_animacao()
 
@@ -84,9 +93,9 @@ class Personagem:
             frame = pygame.transform.flip(frame, True, False)
 
         # teste de hitbox
-        # a = pygame.Surface(self.hitbox["rect"].size, pygame.SRCALPHA)
-        # a.fill((255,255,255,127))
-        # display.blit(a, (self.hitbox["rect"].x +37.5, self.hitbox["rect"].y +30))
+        a = pygame.Surface(self.hitbox["rect"].size, pygame.SRCALPHA)
+        a.fill((255,255,255,127))
+        display.blit(a, (self.hitbox["rect"].x - camera.x, self.hitbox["rect"].y - camera.y))
 
         # desenha o frame na posição do personagem
         display.blit(
