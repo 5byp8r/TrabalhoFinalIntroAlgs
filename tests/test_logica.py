@@ -1,5 +1,29 @@
 from src.funcoes import calcular_pontos, jogador_perdeu, limitar_valor
+import pygame
+from src.map import Map, TipoTile
 
+
+def test_colisao_com_borda():
+    pygame.init()
+
+    tipos_tile = [
+        TipoTile("borda", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
+        TipoTile("chao", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
+    ]
+
+    mapa_teste = [
+        [0, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0],
+    ]
+
+    mapa = Map(mapa_teste, tipos_tile, 32)
+
+    jogador_na_borda = pygame.Rect(0, 0, 32, 32)
+
+    assert mapa.tem_colisao(jogador_na_borda) is True
+
+    pygame.quit()
 
 def test_calcular_pontos():
     """Deve somar corretamente os pontos atuais com os pontos ganhos."""
