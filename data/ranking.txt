@@ -2,4 +2,9 @@ RANKING TEMPOS:
 50 --- Nom 
 0 --- marx 
 0 --- marx 
+<<<<<<< HEAD
+0 --- marx 
+=======
 0 --- P 
+>>>>>>> 4d8018bd4cf9fd6a9943b637446e8a85df44a0ee
+0 --- marx 

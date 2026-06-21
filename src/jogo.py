@@ -30,9 +30,8 @@ from src.funcoes import (
     verificar_colisao,
     vitimas_perdidas,
     tempo_jogo,
-    tempo_por_enigma,
+    quantidade_vitimas,
     punicao_tempo_jogo,
-    punicao_tempo_enigma,
     abrir_desafio,
     validar_resposta,
 )
@@ -151,23 +150,14 @@ class Jogo:
         self.caixa_resposta = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
         self.caixa_insert = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
         self.caixa_insert.texto = "Nome"
-
         self.dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_DISPLAY-100, LARGURA_DISPLAY, 100)) 
-
         self.vitimas = ["vitima_1", "vitima_2", "vitima_3", "vitima_4", "vitima_5", "vitima_6"]
         self.vitimas_vivas = len(self.vitimas)
-        self.enigma_atual = 0
-        self.frame_atual = 0
-        self.frame_enigma = 0
-
+        self.vitimas_perdidas_quantidade = 0
         self.desafio_aberto = False
-
         self.recorde = carregar_recorde(CAMINHO_RECORDE)
-
         self.desafio_finalizado = False
-
         self.jogo_iniciado = False
-
         self.desenhar_caixa_insert = False
         self.desenhar_carta = False
 
@@ -208,16 +198,12 @@ class Jogo:
             self.caixa_resposta.atualizar() 
 
             if entradas.clicado(pygame.K_RETURN):
+
                 if validar_resposta(self.caixa_resposta.texto,"teste"):
                     self.desafio_finalizado = True
-                    self.enigma_atual += 1
-                    self.frame_enigma = 0
                     self.desafio_aberto = False
                     self.caixa_resposta.limpar()
-                #else:
-                #    acao_errada = True
-                #caixa_resposta.limpar()
-
+                
             if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
                 ativo = self.caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
                 if not ativo: self.carta.virar()
@@ -231,27 +217,20 @@ class Jogo:
         else:
             self.desenhar_carta = False
 
-        #sistema de recompensa e punição por tempo
-        self.frame_atual += 1
-        if self.desafio_aberto:
-            self.frame_enigma += 1
 
-        if tempo_por_enigma(self.frame_enigma, FPS, minutos=5):
-            self.vitimas_vivas = punicao_tempo_enigma(self.vitimas_vivas)
-            self.enigma_atual += 1
-            self.frame_enigma = 0
+        #sistema de recompensa e punição por tempo com sistema de relogio do pygame
+        ticks_atual = pygame.time.get_ticks()
+        
+        if quantidade_vitimas(ticks_atual, self.vitimas_perdidas_quantidade, minutos=5):
+            self.vitimas_vivas -= 1
+            self.vitimas_perdidas_quantidade += 1
 
-        if tempo_jogo(self.frame_atual, FPS, minutos=30):
+        if tempo_jogo(ticks_atual, minutos=30):
             self.pontos = punicao_tempo_jogo(self.pontos, 30)
-
             exitGame()
             return False
-
+        
         if vitimas_perdidas(self.vitimas_vivas):
-            exitGame()
-            return False
-
-        if self.enigma_atual >= len(self.vitimas):
             exitGame()
             return False
 
@@ -264,17 +243,12 @@ class Jogo:
             carregar_ranking(CAMINHO_RANKING)
             self.desafio_finalizado = False
 
-        segundos_totais = max(0, (FPS * 60 * 30 - self.frame_atual) // FPS)
+        segundos_totais = max(0, (30 * 60 * 1000 - ticks_atual) // 1000)
         self.minutos_jogo = segundos_totais // 60
         self.segundos_jogo = segundos_totais % 60
 
-        segundos_enigma = max(0, (FPS * 60 * 5 - self.frame_enigma) // FPS)
-        self.minutos_enigma = segundos_enigma // 60
-        self.segundos_enigma_resto = segundos_enigma % 60
-
         return True
-
-    # Desenha os itens do jogo
+    
     def desenhar(self):
         self.display.fill(PRETO)
         self.mapa.desenhar_mapa(self.display)
@@ -292,15 +266,14 @@ class Jogo:
             self.delay += self.relogio.get_time()
             self.delay = self.caixa_resposta.desenhar(self.display, self.delay)
 
+
         texto_tempo_jogo = self.fonte_timer.render(
             f"Tempo total: {self.minutos_jogo:02d}:{self.segundos_jogo:02d}", True, BRANCO
         )
-        texto_tempo_enigma = self.fonte_timer.render(
-            f"Enigma: {self.minutos_enigma:02d}:{self.segundos_enigma_resto:02d}", True, BRANCO
+        texto_vitimas = self.fonte_timer.render(
+            f"Vitimas Vivas: {self.vitimas_vivas}/{len(self.vitimas)}", True, BRANCO
         )
 
         self.display.blit(texto_tempo_jogo, (10, 10))
-        if self.desafio_aberto:
-            self.display.blit(texto_tempo_enigma, (10, 50))
-
+        self.display.blit(texto_vitimas, (10, 50))
         pygame.display.flip()

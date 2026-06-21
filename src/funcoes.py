@@ -46,23 +46,20 @@ def validar_resposta(resposta_inserida, resposta_correta):
 
 #Sistema de recompensa e punição fucnionará por tempo
 
-def tempo_jogo(frame_atual, fps, minutos=30):
+def tempo_jogo(ticks_atual, minutos=30):
     """Essa função se refere ao tempo de 30 minutos para solucionar o objetivo final"""
-    tempo_limite = fps * 60 * minutos
-    return frame_atual >= tempo_limite
+    limite_ms = minutos * 60 * 1000
+    return ticks_atual >= limite_ms
  
-def tempo_por_enigma(frame_enigma, fps, minutos=5):
-    """Essa função se refere ao tempo maximo de cada enigma. 5 Minutos. Se o jogador perder 5 minutos, uma vítima morre"""
-    tempo_limite = fps * 60 * minutos 
-    return frame_enigma >= tempo_limite
+def quantidade_vitimas(ticks_atual, vitimas_perdidas_quantidade, minutos=5):
+    """Essa função se refere a quantidade de vitimas perdidas a cada 5 Minutos. Se o jogador perder 5 minutos, uma vítima morre"""
+    limite_ms = minutos * 60 * 1000
+    vitimas = ticks_atual // limite_ms
+    return vitimas > vitimas_perdidas_quantidade
 
 def punicao_tempo_jogo(pontos_atual, punicao_pontos):
     """Essa função se refere à punição por tempo perdido"""
     return pontos_atual - punicao_pontos
-
-def punicao_tempo_enigma(vidas_atual):
-    """Essa função se refere à punição por tempo perdido em cada função, acarretando na morte de uma mítima a cada enigma perdido"""
-    return vidas_atual - 1
 
 def vitimas_perdidas(vitimas_vivas):
     """Essa função indica se todas as vítimas morreram"""
