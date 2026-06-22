@@ -4,6 +4,7 @@ from src import entradas
 from src.camera import criar_display
 from src.config import ALTURA_DISPLAY, LARGURA_DISPLAY, TITULO_JOGO
 from src.menu_inicial import MenuInicial
+from src.tela_final import tela_derrota, tela_vitoria
 
 #Variáveis globais para manipulação entre as funções
 tela_atual = None
@@ -19,6 +20,7 @@ def executar_jogo():
 
     display = criar_display(ALTURA_DISPLAY, LARGURA_DISPLAY, TITULO_JOGO)
     tela_atual = MenuInicial(display, LARGURA_DISPLAY, ALTURA_DISPLAY)
+
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:

@@ -59,6 +59,8 @@ from src.dados import (
 
 from src.executar_jogo import exitGame
 
+from src.tela_final import tela_derrota, tela_vitoria
+
 class Jogo:
     # Instancia variáveis do jogo
     def __init__(self, display):
@@ -142,7 +144,6 @@ class Jogo:
                         velocidade_animacao = velocidade_animacao_npc,
                         animacoes = animacoes_npc)
 
-        self.pontos = 0
         self.delay = 0
         self.fonte_timer = pygame.font.Font(None, 36)
 
@@ -151,7 +152,7 @@ class Jogo:
         self.caixa_insert = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
         self.caixa_insert.texto = "Nome"
         self.dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_DISPLAY-100, LARGURA_DISPLAY, 100)) 
-        self.vitimas = ["vitima_1", "vitima_2", "vitima_3", "vitima_4", "vitima_5", "vitima_6"]
+        self.vitimas = ["vitima_1","vitima_1","vitima_1","vitima_1","vitima_1","vitima_1"]
         self.vitimas_vivas = len(self.vitimas)
         self.vitimas_perdidas_quantidade = 0
         self.desafio_aberto = False
@@ -160,6 +161,11 @@ class Jogo:
         self.jogo_iniciado = False
         self.desenhar_caixa_insert = False
         self.desenhar_carta = False
+        self.tempo_limite_ms = 30 * 60 * 1000
+
+        self.pontos = self.tempo_limite_ms // 1000
+        self.penalidade_tempo_ms = 0
+        self.tempo_inicio = pygame.time.get_ticks()
 
     # Atualiza estado, colisões e pontuação do jogo
     def atualizar(self):
@@ -203,6 +209,9 @@ class Jogo:
                     self.desafio_finalizado = True
                     self.desafio_aberto = False
                     self.caixa_resposta.limpar()
+                else:
+                    self.penalidade_tempo_ms += 30 * 1000
+                    self.caixa_resposta.limpar()
                 
             if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
                 ativo = self.caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
@@ -225,12 +234,17 @@ class Jogo:
             self.vitimas_vivas -= 1
             self.vitimas_perdidas_quantidade += 1
 
+        tempo_decorrido = ticks_atual - self.tempo_inicio + self.penalidade_tempo_ms
+        tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_decorrido)
+
         if tempo_jogo(ticks_atual, minutos=30):
             self.pontos = punicao_tempo_jogo(self.pontos, 30)
+            tela_derrota(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
             exitGame()
             return False
         
         if vitimas_perdidas(self.vitimas_vivas):
+            tela_derrota(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
             exitGame()
             return False
 
@@ -239,13 +253,24 @@ class Jogo:
             salvar_recorde(CAMINHO_RECORDE, self.recorde)
 
         if self.desafio_finalizado:
-            salvar_ranking(CAMINHO_RANKING, self.jogador.nome, self.pontos)
+            tempo_finalizado_ms = pygame.time.get_ticks() - self.tempo_inicio + self.penalidade_tempo_ms
+            segundos = tempo_finalizado_ms // 1000
+            minutos = segundos // 60
+            segundos = segundos % 60
+            tempo_formatado = f"{minutos:02d}:{segundos:02d}"
+
+            salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
             carregar_ranking(CAMINHO_RANKING)
             self.desafio_finalizado = False
 
-        segundos_totais = max(0, (30 * 60 * 1000 - ticks_atual) // 1000)
-        self.minutos_jogo = segundos_totais // 60
-        self.segundos_jogo = segundos_totais % 60
+        ticks_atual = pygame.time.get_ticks()
+        tempo_decorrido = ticks_atual - self.tempo_inicio + self.penalidade_tempo_ms
+        tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_decorrido)
+
+        segundos_restantes = tempo_restante_ms // 1000
+        self.minutos_jogo = segundos_restantes // 60
+        self.segundos_jogo = segundos_restantes % 60
+        self.pontos = segundos_restantes
 
         return True
     
