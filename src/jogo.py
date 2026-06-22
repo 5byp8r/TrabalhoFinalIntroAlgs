@@ -1,4 +1,4 @@
-import pygame
+﻿import pygame
 
 from src.map import (
     TipoTile,
@@ -62,7 +62,7 @@ from src.executar_jogo import exitGame
 from src.tela_final import tela_derrota, tela_vitoria
 
 class Jogo:
-    # Instancia variáveis do jogo
+    # Instancia variÃ¡veis do jogo
     def __init__(self, display):
         self.display = display
         self.relogio = pygame.time.Clock()
@@ -76,8 +76,8 @@ class Jogo:
 
         self.mapa = Map(MAPA, tipos_tile, TAMANHO_TILE)
 
-        # carrega todas as animações do jogador
-        # cada chave do dicionário é um estado, e o valor é a lista de frames daquele estado
+        # carrega todas as animaÃ§Ãµes do jogador
+        # cada chave do dicionÃ¡rio Ã© um estado, e o valor Ã© a lista de frames daquele estado
         animacoes_jogador = {
             "idle":    carregar_frames("assets/imagens/personagem_principal/Idle.png"),
             "idle2":   carregar_frames("assets/imagens/personagem_principal/Idle_2.png"),
@@ -91,7 +91,7 @@ class Jogo:
             "dead":    carregar_frames("assets/imagens/personagem_principal/Dead.png"),
         }
 
-        # carrega todas as animações do npc
+        # carrega todas as animaÃ§Ãµes do npc
         animacoes_npc = {
             "idle":    carregar_frames("assets/imagens/npc_1/Idle.png"),
             "walk":    carregar_frames("assets/imagens/npc_1/Walk.png"),
@@ -101,27 +101,27 @@ class Jogo:
             "dead":    carregar_frames("assets/imagens/npc_1/Dead.png"),
         }
 
-        # velocidade de cada animação do jogador separadamente
-        # quanto menor o número, mais rápido troca os frames
+        # velocidade de cada animaÃ§Ã£o do jogador separadamente
+        # quanto menor o nÃºmero, mais rÃ¡pido troca os frames
         velocidade_animacao_jogador = {
             "idle":    10,
             "idle2":   10,
             "walk":    5,
             "run":     5,
             "jump":    8,
-            "attack1": 4,  # ataques são mais rápidos
+            "attack1": 4,  # ataques sÃ£o mais rÃ¡pidos
             "attack2": 4,
             "attack3": 4,
             "hurt":    5,
             "dead":    8,
         }
 
-        # velocidade de cada animação do npc separadamente
+        # velocidade de cada animaÃ§Ã£o do npc separadamente
         velocidade_animacao_npc = {
             "idle":    10,
             "walk":    10,
             "run":     7,
-            "attack":  4,  # ataques são mais rápidos
+            "attack":  4,  # ataques sÃ£o mais rÃ¡pidos
             "hurt":    5,
             "dead":    8,
         }
@@ -167,7 +167,7 @@ class Jogo:
         self.pontos = 0
         self.tempo_inicio = pygame.time.get_ticks()
 
-    # Atualiza estado, colisões e pontuação do jogo
+    # Atualiza estado, colisÃµes e pontuaÃ§Ã£o do jogo
     def atualizar(self):
         self.relogio.tick(FPS)
         self.jogador.atualizar(self.mapa)
@@ -205,27 +205,34 @@ class Jogo:
 
             if entradas.clicado(pygame.K_RETURN):
 
+                ticks_vitoria = pygame.time.get_ticks()
+                tempo_finalizado_ms = ticks_vitoria - self.tempo_inicio + self.penalidade_tempo_ms
+                segundos_finalizados = tempo_finalizado_ms // 1000
+                minutos = segundos_finalizados // 60
+                segundos = segundos_finalizados % 60
+                tempo_formatado = f"{minutos:02d}:{segundos:02d}"
+
+                tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_finalizado_ms)
+                self.pontos = tempo_formatado
+
                 if validar_resposta(self.caixa_resposta.texto,"teste"):
                     self.desafio_finalizado = True
                     self.desafio_aberto = False
                     self.caixa_resposta.limpar()
 
-                    tempo_finalizado_ms = pygame.time.get_ticks() - self.tempo_inicio + self.penalidade_tempo_ms
-                    segundos = tempo_finalizado_ms // 1000
-                    minutos = segundos // 60
-                    segundos = segundos % 60
-                    tempo_formatado = f"{minutos:02d}:{segundos:02d}"
-
-                    self.pontos = tempo_formatado
-                    tela_vitoria(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
-
                     if self.pontos > self.recorde:
                         self.recorde = self.pontos
                         salvar_recorde(CAMINHO_RECORDE, self.recorde)
                         
+                    tela_vitoria(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
+                    exitGame()
+                    return False
+                        
                 else:
                     self.penalidade_tempo_ms += 30 * 1000
                     self.caixa_resposta.limpar()
+
+                salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
                 
             if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
                 ativo = self.caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
@@ -241,18 +248,17 @@ class Jogo:
             self.desenhar_carta = False
 
 
-        #sistema de recompensa e punição por tempo com sistema de relogio do pygame
+        # Sistema de tempo: respostas erradas entram como penalidade no tempo decorrido.
         ticks_atual = pygame.time.get_ticks()
-        
-        if quantidade_vitimas(ticks_atual, self.vitimas_perdidas_quantidade, minutos=5):
+        tempo_decorrido = ticks_atual - self.tempo_inicio + self.penalidade_tempo_ms
+        tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_decorrido)
+        segundos_restantes = tempo_restante_ms // 1000
+
+        if quantidade_vitimas(tempo_decorrido, self.vitimas_perdidas_quantidade, minutos=3):
             self.vitimas_vivas -= 1
             self.vitimas_perdidas_quantidade += 1
 
-        tempo_decorrido = ticks_atual - self.tempo_inicio + self.penalidade_tempo_ms
-        tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_decorrido)
-
-        if tempo_jogo(ticks_atual, minutos=30):
-            self.pontos = punicao_tempo_jogo(self.pontos, 30)
+        if tempo_restante_ms <= 0:
             tela_derrota(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
             exitGame()
             return False
@@ -262,15 +268,6 @@ class Jogo:
             exitGame()
             return False
 
-        if self.desafio_finalizado:
-            salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
-            self.desafio_finalizado = False
-
-        ticks_atual = pygame.time.get_ticks()
-        tempo_decorrido = ticks_atual - self.tempo_inicio + self.penalidade_tempo_ms
-        tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_decorrido)
-
-        segundos_restantes = tempo_restante_ms // 1000
         self.minutos_jogo = segundos_restantes // 60
         self.segundos_jogo = segundos_restantes % 60
 
@@ -304,3 +301,4 @@ class Jogo:
         self.display.blit(texto_tempo_jogo, (10, 10))
         self.display.blit(texto_vitimas, (10, 50))
         pygame.display.flip()
+

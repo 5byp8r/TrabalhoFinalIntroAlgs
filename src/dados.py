@@ -1,15 +1,15 @@
-def salvar_recorde(caminho_arquivo, pontuacao):
-    """Salva a pontuação recorde em arquivo texto."""
+﻿def salvar_recorde(caminho_arquivo, pontuacao):
+    """Salva a pontuaÃ§Ã£o recorde em arquivo texto."""
     with open(caminho_arquivo, "w", encoding="utf-8") as arquivo:
         arquivo.write(str(pontuacao))
 
 def salvar_ranking(caminho_arquivo, nome, tempo_finalizado):
     """Faz o ranqueamento no tempo do jogador"""
     with open(caminho_arquivo, "a", encoding="utf-8") as arquivo:
-        arquivo.write(f"{tempo_finalizado} --- {nome}\n")
+        arquivo.write(f"{tempo_finalizado} --- {nome} \n")
 
 def carregar_ranking(caminho_arquivo):
-    """Carrega o ranqueamento da pontuação dos jogadores"""
+    """Carrega o ranqueamento da pontuaÃ§Ã£o dos jogadores"""
     try:
         with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
             conteudo = arquivo.read().strip()
@@ -23,7 +23,7 @@ def carregar_ranking(caminho_arquivo):
         return False
 
 def carregar_recorde(caminho_arquivo):
-    """Carrega o recorde salvo; retorna 0 se não existir valor válido."""
+    """Carrega o recorde salvo; retorna 0 se nÃ£o existir valor vÃ¡lido."""
     try:
         with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
             conteudo = arquivo.read().strip()
