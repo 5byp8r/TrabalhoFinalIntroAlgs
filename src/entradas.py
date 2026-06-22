@@ -5,9 +5,9 @@ teclas_pressionadas = dict()
 def adicionar_tecla(tecla, adicional = None):
     teclas_pressionadas[tecla] = adicional
     teclas_clicadas[tecla] = adicional
-
+    
 def deletar_tecla(tecla):
-    del teclas_pressionadas[tecla]
+    teclas_pressionadas.pop(tecla, None)
 
 def pressionado(tecla):
     return tecla in teclas_pressionadas.keys()

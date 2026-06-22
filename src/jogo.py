@@ -62,6 +62,8 @@ from src.dados import (
     carregar_ranking
 )
 
+from src.tela_final import tela_vitoria, tela_derrota
+
 tipos_tile = [
     TipoTile("dirt", "assets/imagens/Tiles/GK_JC_Free_037.png", False),
     TipoTile("border", "assets/imagens/Tiles/GK_JC_Free_043.png", True),
@@ -169,14 +171,18 @@ def executar_jogo():
     objetivo_encontrado = False
     acao_errada = False
     tempo_esgotado = False
-    tempo_limite = FPS * 30
+    tempo_limite = FPS * 180  # 3 minutos
+    LIMITE_PONTOS_NEGATIVOS = -100
     frame_atual = 0
 
     desafio_aberto = False
+    derrota_processada = False
+    derrota_por_pontos = False
 
     recorde = carregar_recorde(CAMINHO_RECORDE)
 
     desafio_finalizado = False
+
 
     # Loop principal: processa entrada, atualiza estado e renderiza a cena.
     while rodando:
@@ -266,16 +272,26 @@ def executar_jogo():
         #recompensa por pista coletada (gema) e objetivos
         if  pista_encontrada:
             pontos = recompensa_pista(pontos, 10)
+            pista_encontrada = False
 
         if objetivo_encontrado:
             pontos = recompensa_objetivo(pontos, 50)
+            objetivo_encontrado = False
 
         #sistema de punição
         if acao_errada:
             pontos = punicao_erro(pontos, 20)
+            acao_errada = False
 
-        if tempo_esgotado:
+        if tempo_esgotado and not derrota_processada:
             pontos = punicao_tempo(pontos, 30)
+            derrota_processada = True
+
+        #condição de derrota: pontos muito negativos
+        if pontos <= LIMITE_PONTOS_NEGATIVOS and not derrota_processada:
+            derrota_processada = True
+            derrota_por_pontos = True
+            rodando = False
 
         if pontos > recorde:
             recorde = pontos
@@ -284,11 +300,18 @@ def executar_jogo():
         if desafio_finalizado:
             salvar_ranking(CAMINHO_RANKING, jogador.nome, pontos)
             carregar_ranking(CAMINHO_RANKING)
-            desafio_finalizado = False
+            rodando = False
 
         frame_atual += 1 
         if frame_atual >= tempo_limite:
             tempo_esgotado = True
+            rodando = False  #termina o loop, derrota
         pygame.display.flip()
+
+    # depois do loop, decide qual tela final mostrar
+    if tempo_esgotado or derrota_por_pontos:
+        tela_derrota(tela, LARGURA_TELA, ALTURA_TELA, pontos)
+    elif desafio_finalizado:
+        tela_vitoria(tela, LARGURA_TELA, ALTURA_TELA, pontos)
 
     pygame.quit()
