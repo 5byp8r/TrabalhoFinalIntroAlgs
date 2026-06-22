@@ -162,9 +162,9 @@ class Jogo:
         self.desenhar_caixa_insert = False
         self.desenhar_carta = False
         self.tempo_limite_ms = 30 * 60 * 1000
-
-        self.pontos = self.tempo_limite_ms // 1000
         self.penalidade_tempo_ms = 0
+
+        self.pontos = 0
         self.tempo_inicio = pygame.time.get_ticks()
 
     # Atualiza estado, colisões e pontuação do jogo
@@ -209,6 +209,20 @@ class Jogo:
                     self.desafio_finalizado = True
                     self.desafio_aberto = False
                     self.caixa_resposta.limpar()
+
+                    tempo_finalizado_ms = pygame.time.get_ticks() - self.tempo_inicio + self.penalidade_tempo_ms
+                    segundos = tempo_finalizado_ms // 1000
+                    minutos = segundos // 60
+                    segundos = segundos % 60
+                    tempo_formatado = f"{minutos:02d}:{segundos:02d}"
+
+                    self.pontos = tempo_formatado
+                    tela_vitoria(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
+
+                    if self.pontos > self.recorde:
+                        self.recorde = self.pontos
+                        salvar_recorde(CAMINHO_RECORDE, self.recorde)
+                        
                 else:
                     self.penalidade_tempo_ms += 30 * 1000
                     self.caixa_resposta.limpar()
@@ -248,19 +262,8 @@ class Jogo:
             exitGame()
             return False
 
-        if self.pontos > self.recorde:
-            self.recorde = self.pontos
-            salvar_recorde(CAMINHO_RECORDE, self.recorde)
-
         if self.desafio_finalizado:
-            tempo_finalizado_ms = pygame.time.get_ticks() - self.tempo_inicio + self.penalidade_tempo_ms
-            segundos = tempo_finalizado_ms // 1000
-            minutos = segundos // 60
-            segundos = segundos % 60
-            tempo_formatado = f"{minutos:02d}:{segundos:02d}"
-
             salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
-            carregar_ranking(CAMINHO_RANKING)
             self.desafio_finalizado = False
 
         ticks_atual = pygame.time.get_ticks()
@@ -270,7 +273,6 @@ class Jogo:
         segundos_restantes = tempo_restante_ms // 1000
         self.minutos_jogo = segundos_restantes // 60
         self.segundos_jogo = segundos_restantes % 60
-        self.pontos = segundos_restantes
 
         return True
     

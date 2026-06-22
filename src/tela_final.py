@@ -12,7 +12,7 @@ def tela_vitoria(tela, largura_tela, altura_tela, pontos):
     fonte_pontos = pygame.font.SysFont(None, 40)
 
     titulo = fonte_titulo.render("VOCÊ VENCEU!", True, VERDE)
-    texto_pontos = fonte_pontos.render(f"Pontos: {pontos}", True, BRANCO)
+    texto_pontos = fonte_pontos.render(f"tempo: {pontos}", True, BRANCO)
 
     clock = pygame.time.Clock()
 
@@ -39,7 +39,7 @@ def tela_derrota(tela, largura_tela, altura_tela, pontos):
     fonte_pontos = pygame.font.SysFont(None, 40)
 
     titulo = fonte_titulo.render("TEMPO ESGOTADO", True, VERMELHO)
-    texto_pontos = fonte_pontos.render(f"Pontos: {pontos}", True, BRANCO)
+    texto_pontos = fonte_pontos.render(f"tempo: {pontos}", True, BRANCO)
 
     clock = pygame.time.Clock()
 
