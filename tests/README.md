@@ -69,23 +69,6 @@ Cobre:
 - `vitimas_perdidas`: verifica se todas as vitimas foram perdidas;
 - `abrir_desafio`: confirma abertura de desafio.
 
-### `test_dados.py`
-
-Testa as funcoes de leitura e escrita de arquivos em `src/dados.py`.
-
-Cobre:
-
-- salvar recorde;
-- carregar recorde salvo;
-- retornar `0` quando o arquivo de recorde nao existe;
-- retornar `0` quando o arquivo de recorde esta vazio;
-- salvar ranking no formato esperado;
-- carregar ranking existente;
-- retornar `False` quando o ranking nao existe;
-- retornar `False` quando o ranking esta vazio.
-
-Esses testes usam `tmp_path`, que cria arquivos temporarios sem alterar os arquivos reais da pasta `data/`.
-
 ### `test_map.py`
 
 Testa a colisao do mapa em `src/map.py`.

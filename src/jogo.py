@@ -220,8 +220,8 @@ class Jogo:
                     self.desafio_aberto = False
                     self.caixa_resposta.limpar()
 
-                    if self.pontos > self.recorde:
-                        self.recorde = self.pontos
+                    if segundos_finalizados > self.recorde:
+                        self.recorde = segundos_finalizados
                         salvar_recorde(CAMINHO_RECORDE, self.recorde)
                         
                     tela_vitoria(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
@@ -231,8 +231,6 @@ class Jogo:
                 else:
                     self.penalidade_tempo_ms += 30 * 1000
                     self.caixa_resposta.limpar()
-
-                salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
                 
             if entradas.clicado(pygame.MOUSEBUTTONDOWN * 1):
                 ativo = self.caixa_resposta.caixa.collidepoint(entradas.teclas_clicadas[pygame.MOUSEBUTTONDOWN * 1])  # ativa ao clicar na caixa
@@ -270,6 +268,10 @@ class Jogo:
 
         self.minutos_jogo = segundos_restantes // 60
         self.segundos_jogo = segundos_restantes % 60
+
+        if self.desafio_finalizado:
+            salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
+
 
         return True
     
