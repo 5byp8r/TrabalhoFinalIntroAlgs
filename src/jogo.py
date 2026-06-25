@@ -144,30 +144,37 @@ class Jogo:
                         velocidade_animacao = velocidade_animacao_npc,
                         animacoes = animacoes_npc)
 
+
+        ##TEMPO
         self.delay = 0
         self.fonte_timer = pygame.font.Font(None, 36)
+        self.jogo_iniciado = False
 
-        self.carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
-        self.caixa_resposta = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
         self.caixa_insert = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
         self.caixa_insert.texto = "Nome"
         self.dialogos = Texto("assets/textos/npc.json", tamanho=48, fundo=pygame.Rect(0, ALTURA_DISPLAY-100, LARGURA_DISPLAY, 100)) 
+        
         self.vitimas = ["vitima_1","vitima_1","vitima_1","vitima_1","vitima_1","vitima_1"]
-        self.vitimas_vivas = len(self.vitimas)
-        self.vitimas_perdidas_quantidade = 0
-        self.desafio_aberto = False
         self.recorde = carregar_recorde(CAMINHO_RECORDE)
-        self.desafio_finalizado = False
-        self.jogo_iniciado = False
         self.desenhar_caixa_insert = False
-        self.desenhar_carta = False
-        self.tempo_limite_ms = 30 * 60 * 1000
-        self.penalidade_tempo_ms = 0
 
+        self.tempo_limite_ms = 30 * 60 * 1000
+        self.vitimas_perdidas_quantidade = 0
+        self.vitimas_vivas = len(self.vitimas)
+
+        ## DESAFIO
+
+        self.carta = Carta(0, 0 , "assets/imagens/Desafios/1.png","assets/imagens/Desafios/2.png")
+        self.caixa_resposta = caixaTexto(LARGURA_DISPLAY // 2 ,ALTURA_DISPLAY - 50 , 300, 40)
+        self.desafio_finalizado = False
+        self.desafio_aberto = False
         self.pontos = 0
+        self.desenhar_carta = False
+        
+        self.penalidade_tempo_ms = 0
         self.tempo_inicio = pygame.time.get_ticks()
 
-    # Atualiza estado, colisÃµes e pontuaÃ§Ã£o do jogo
+    # Atualiza estado, colisões e pontuação do jogo
     def atualizar(self):
         self.relogio.tick(FPS)
         self.jogador.atualizar(self.mapa)
@@ -219,8 +226,11 @@ class Jogo:
                     self.desafio_finalizado = True
                     self.desafio_aberto = False
                     self.caixa_resposta.limpar()
+                                
+                    if self.desafio_finalizado == True:
+                        salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado, self.vitimas_vivas)
 
-                    if segundos_finalizados > self.recorde:
+                    if segundos_finalizados < self.recorde:
                         self.recorde = segundos_finalizados
                         salvar_recorde(CAMINHO_RECORDE, self.recorde)
                         
@@ -251,6 +261,8 @@ class Jogo:
         tempo_decorrido = ticks_atual - self.tempo_inicio + self.penalidade_tempo_ms
         tempo_restante_ms = max(0, self.tempo_limite_ms - tempo_decorrido)
         segundos_restantes = tempo_restante_ms // 1000
+        self.minutos_jogo = segundos_restantes // 60
+        self.segundos_jogo = segundos_restantes % 60
 
         if quantidade_vitimas(tempo_decorrido, self.vitimas_perdidas_quantidade, minutos=3):
             self.vitimas_vivas -= 1
@@ -265,13 +277,6 @@ class Jogo:
             tela_derrota(self.display, LARGURA_DISPLAY, ALTURA_DISPLAY, self.pontos)
             exitGame()
             return False
-
-        self.minutos_jogo = segundos_restantes // 60
-        self.segundos_jogo = segundos_restantes % 60
-
-        if self.desafio_finalizado:
-            salvar_ranking(CAMINHO_RANKING, self.jogador.nome, tempo_formatado)
-
 
         return True
     
